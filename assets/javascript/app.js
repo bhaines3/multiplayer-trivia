@@ -1,5 +1,5 @@
 var userInfo = {
-    userNames: ["brandon", "jason", "michelle", "andrew"],
+    userNames: [],
 };
 var avatarCall = function(username) {
     var thisWillBeADiv = $("<div/>");
@@ -39,8 +39,15 @@ var avatarByUser = function (array) {
         avatarCall(`${array[i]}`);
     }
 };
+var clickListeners = function() {
+    $(document).on("click", "#submitButton", function(){
+        var input = $("#userName").find("text:input").val().trim();
+        userInfo.userNames.push(input);
+        avatarByUser(userInfo.userNames);
+    })
+}
 $(document).ready(function() {
-    avatarByUser(userInfo.userNames);
+    clickListeners();
 });
 //added ajax template
 
