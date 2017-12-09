@@ -11,20 +11,23 @@
 <!-- Added a link to Bootstrap-->
         <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta.2/css/bootstrap.min.css" integrity="sha384-PsH8R72JQ3SOdhVi3uxftmaW6Vc51MKb0q5P2rRUpPvrszuE4W1povHYgTpBfshb" crossorigin="anonymous">
 <!-- Added a link to stylesheet -->
-
-        <link rel="stylesheet" type="text/css" href="assets/css/styles.css">
+        <link rel="stylesheet" type="text/css" href="assets/css/style.css">
         <title>Multi-Player Trivia</title>
     </head>
     <body>
-<div class="jumbotron jumbotron-fluid">
+<div class="jumbotron jumbotron-fluid" id="header">
 <div class="container">
-        <h1 class="display-3">Multiplayer Trivia!</h1>
+        <h1 class="display-3">Pod Power Multiplayer Trivia!</h1>
         <p class="lead">The Faster You Answer, The More Points You Get!</p>
+        <p class="lead">
+        <a class="btn btn-primary btn-lg" id="readyButton" href="#" role="button">Get Ready!</a>
+        </p>
         </div>
 </div>
 <!-- Timer Box -->
 <div class="row">
-<div class="col-sm-6">
+<div class="col-sm-3"></div>
+<div class="col-sm-6" id="timer">
         <div class="card">
         <div class="card-body">
         <h4 class="card-title">Timer</h4>
@@ -32,9 +35,11 @@
         </div>
         </div>
 </div>
+<div class="col-sm-3"></div>
+</div>
 <!-- question box -->
 <div class="row">
-        <div class="card">
+        <div  class="card" id="questionBox">
         <div class="card-body row">
                 <div class="col-sm-4"></div>
                 <div class="col-sm-8">
@@ -53,7 +58,7 @@
 
         <!-- Player Cards -->
         <div class="row">
-        <div class="col-sm-3">
+        <div class="col-sm-3" id="playerCard">
                 <div class="card" style="width: 20rem;">
                 <img class="card-img-top" src="..." alt="Card image cap">
                         <div class="card-body">
@@ -62,7 +67,7 @@
                 </div>
                 </div>
         </div>
-        <div class="col-sm-3">
+        <div class="col-sm-3"  id="playerCard">
         <div class="card" style="width: 20rem;">
                 <img class="card-img-top" src="..." alt="Card image cap">
                 <div class="card-body">
@@ -71,7 +76,7 @@
                 </div>
                 </div>
         </div>
-        <div class="col-sm-3">
+        <div class="col-sm-3"  id="playerCard">
         <div class="card" style="width: 20rem;">
                 <img class="card-img-top" src="..." alt="Card image cap">
                 <div class="card-body">
@@ -88,8 +93,7 @@
                         <p class="score">No Points Yet!</p>
                 </div>
         </div>
-        </div>	
-
+        </div>
         </div>
     </body>
 </html>
