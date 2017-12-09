@@ -2,19 +2,37 @@ var userInfo = {
     userNames: ["brandon", "jason", "michelle", "andrew"],
 };
 var avatarCall = function(username) {
-    var avatar = $("<img/>");
+    var thisWillBeADiv = $("<div/>");
     var thisWillBeACard = $("<div/>");
-    var somebodysName = $("<div/>")
+    var imgPlace = $("<div/>");
+    var avatar = $("<img/>");
+    var smallerDiv = $("<div/>");
+    var somebodysName = $("<h4/>");
+    var score = $("<p/>");
+    imgPlace
+        .addClass("row justify-content-center")
+        .appendTo(thisWillBeACard);
     avatar
+        .addClass("card-img-top avatar-image")
         .attr("src", `https://api.adorable.io/avatars/131/${username}.png`)
         .attr("alt", username)
-        .appendTo(thisWillBeACard);
-    somebodysName = $("<p/>")
+        .appendTo(imgPlace);
     somebodysName
         .html(username)
+        .appendTo(smallerDiv);
+    score 
+        .html("score goes here")
+        .appendTo(smallerDiv);
+    smallerDiv
+        .addClass("card-body")
         .appendTo(thisWillBeACard);
     thisWillBeACard
-        .appendTo("body");
+        .addClass("card")
+        .css({"width":"20rem"})
+        .appendTo(thisWillBeADiv);
+    thisWillBeADiv
+        .attr("class", "col-3")
+        .appendTo($("#player-cards"));
 };
 var avatarByUser = function (array) {
     for (var i = 0; i < array.length; i++) {
@@ -72,7 +90,6 @@ $.ajax({
       array[currentIndex] = array[randomIndex];
       array[randomIndex] = temporaryValue;
     }
-
     return array;
   }
 })
