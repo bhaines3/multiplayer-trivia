@@ -15,41 +15,49 @@
         <title>Multi-Player Trivia</title>
     </head>
     <body>
-        <div class="jumbotron jumbotron-fluid">
-            <div class="container">
-                <h1 class="display-3">Multiplayer Trivia!</h1>
-                <p class="lead">The Faster You Answer, The More Points You Get!</p>
-            </div>
+<div class="jumbotron jumbotron-fluid" id="header">
+<div class="container">
+        <h1 class="display-3">Pod Power Multiplayer Trivia!</h1>
+        <p class="lead">The Faster You Answer, The More Points You Get!</p>
+        <div id="readyButton">
+        <p class="lead">
+        <a class="btn btn-primary btn-lg"  href="#" role="button">Get Ready!</a>
+        </p>
         </div>
-    <!-- Timer Box -->
-        <div class="row">
-            <div class="col-sm-6">
-                <div class="card">
-                    <div class="card-body">
-                    <h4 class="card-title">Timer</h4>
-                    <div class="time" id="countDown" ></div>
-                    </div>
+        </div>
+</div>
+<!-- Timer Box -->
+<div class="row">
+<div class="col-sm-3"></div>
+<div class="col-sm-6" id="timer">
+        <div class="card">
+        <div class="card-body">
+        <h4 class="card-title">Timer</h4>
+        <div class="time" id="countDown" ></div>
+        </div>
+        </div>
+</div>
+<div class="col-sm-3"></div>
+</div>
+<!-- question box -->
+<div class="row">
+        <div  class="card" id="questionBox">
+        <div class="card-body row">
+                <div class="col-sm-4"></div>
+                <div class="col-sm-8">
+                        <div class="questionText"></div>
+                        <form>
+                        <input type="radio" name="q1">  <br>
+                        <input type="radio" name="q1" > <br>
+                        <input type="radio" name="q1" > <br>
+                        <input type="radio" name="q1" > <br>
+                        </form>
+                        <br>
                 </div>
-            </div>
-        </div>
-    <!-- question box -->
-        <div class="row">
-            <div class="card">
-                <div class="card-body row">
-                    <div class="col-sm-4"></div>
-                    <div class="col-sm-8">
-                            <div class="questionText"></div>
-                            <form>
-                            <input type="radio" name="q1">  <br>
-                            <input type="radio" name="q1" > <br>
-                            <input type="radio" name="q1" > <br>
-                            <input type="radio" name="q1" > <br>
-                            </form>
-                            <br>
-                    </div>
                 </div>
-            </div>
         </div>
+        </div>
+
         <!-- Player Cards -->
         <div class="row", id="player-cards">
         </div>
