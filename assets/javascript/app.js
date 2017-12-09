@@ -41,34 +41,38 @@ var avatarByUser = function (array) {
 };
 $(document).ready(function() {
     avatarByUser(userInfo.userNames);
-});
-//added ajax template
 
-var hasStarted = false;
-var numberOfQuestions = 10;
-var categoryNum = 9;
-var questionsArray = [];
-var queryURL = "https://opentdb.com/api.php?amount=" +numberOfQuestions+ "&category="+categoryNum+"&difficulty=easy&type=multiple";
-$.ajax({
-    url: queryURL,
-    method: "GET"
-}).done(function (response) {
-  console.log(response);
-  for (var i = 0; i < numberOfQuestions; i ++)
-  {
-    questionsArray.push(response.results[i].question);
-  }
-  console.log(questionsArray);
-});
-$("#readyButton").click(function() {
-  startGame(true);
-  $("#readyButton").empty();
-})
 
-function startGame(hasStarted) {
-  if (hasStarted = true)
-  {
-    //start the game
-    console.log("The game has started")
-  }
-}
+
+
+
+    //Michelle's code SORRY JASON IGNORE ME
+    function startGame(hasStarted) {
+      if (hasStarted === true)
+      {
+        var hasStarted = false;
+        var numberOfQuestions = 10;
+        var categoryNum = 9;
+        var questionsArray = [];
+        var queryURL = "https://opentdb.com/api.php?amount=" +numberOfQuestions+ "&category="+categoryNum+"&difficulty=easy&type=multiple";
+        $.ajax({
+            url: queryURL,
+            method: "GET"
+        }).done(function (response) {
+          console.log(response);
+          for (var i = 0; i < numberOfQuestions; i ++)
+          {
+            questionsArray.push(response.results[i]);
+          }
+          console.log(questionsArray);
+        });
+        //start the game
+        console.log("The game has started");
+      }
+    }
+
+    $("#readyButton").click(function() {
+        $("#readyButton").empty();
+        startGame(true);
+    });
+});
