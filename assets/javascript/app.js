@@ -1,5 +1,5 @@
 var userInfo = {
-    userNames: ["brandon", "jason", "michelle", "andrew"],
+    userNames: [],
 };
 var avatarCall = function(username) {
     var thisWillBeADiv = $("<div/>");
@@ -39,36 +39,49 @@ var avatarByUser = function (array) {
         avatarCall(`${array[i]}`);
     }
 };
+var clickListeners = function() {
+    $(document).on("click", "#submitButton", function(){
+        var input = $("#userName").find("text:input").val().trim();
+        userInfo.userNames.push(input);
+        avatarByUser(userInfo.userNames);
+    })
+}
 $(document).ready(function() {
-    avatarByUser(userInfo.userNames);
+    clickListeners();
 });
 //added ajax template
 
-var hasStarted = false;
-var numberOfQuestions = 10;
-var categoryNum = 9;
-var questionsArray = [];
-var queryURL = "https://opentdb.com/api.php?amount=" +numberOfQuestions+ "&category="+categoryNum+"&difficulty=easy&type=multiple";
-$.ajax({
-    url: queryURL,
-    method: "GET"
-}).done(function (response) {
-  console.log(response);
-  for (var i = 0; i < numberOfQuestions; i ++)
-  {
-    questionsArray.push(response.results[i].question);
-  }
-  console.log(questionsArray);
-});
-$("#readyButton").click(function() {
-  startGame(true);
-  $("#readyButton").empty();
-})
 
-function startGame(hasStarted) {
-  if (hasStarted = true)
-  {
-    //start the game
-    console.log("The game has started")
-  }
-}
+
+
+
+    //Michelle's code SORRY JASON IGNORE ME
+    function startGame(hasStarted) {
+      if (hasStarted === true)
+      {
+        var hasStarted = false;
+        var numberOfQuestions = 10;
+        var categoryNum = 9;
+        var questionsArray = [];
+        var queryURL = "https://opentdb.com/api.php?amount=" +numberOfQuestions+ "&category="+categoryNum+"&difficulty=easy&type=multiple";
+        $.ajax({
+            url: queryURL,
+            method: "GET"
+        }).done(function (response) {
+          console.log(response);
+          for (var i = 0; i < numberOfQuestions; i ++)
+          {
+            questionsArray.push(response.results[i]);
+          }
+          console.log(questionsArray);
+        });
+        //start the game
+        console.log("The game has started");
+      }
+    }
+
+    $("#readyButton").click(function() {
+        $("#readyButton").empty();
+        startGame(true);
+    });
+});
