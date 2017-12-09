@@ -41,21 +41,16 @@ var avatarByUser = function (array) {
 };
 var clickListeners = function() {
     $(document).on("click", "#submitButton", function(){
-        var input = $("#userName").find("text:input").val().trim();
+        var input = $("#userName").val().trim();
+        console.log(input);
         userInfo.userNames.push(input);
+        console.log(userInfo.userNames);
         avatarByUser(userInfo.userNames);
-    })
-}
+    });
+};
 $(document).ready(function() {
     clickListeners();
-});
-//added ajax template
-
-
-
-
-
-    //Michelle's code SORRY JASON IGNORE ME
+//Michelle's code SORRY JASON IGNORE ME
     function startGame(hasStarted) {
       if (hasStarted === true)
       {
@@ -83,5 +78,5 @@ $(document).ready(function() {
     $("#readyButton").click(function() {
         $("#readyButton").empty();
         startGame(true);
-    });
+    });  
 });
