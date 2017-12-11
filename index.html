@@ -1,71 +1,68 @@
 <!DOCTYPE html>
 <html>
-<head>
-        <meta charset="utf-8">
+        <head>
+                <meta charset="utf-8">
 <!-- Added link to the jQuery Library -->
-        <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+                <script src="https://code.jquery.com/jquery-1.11.3.min.js"></script>
 <!-- Added a link to app.js -->
-        <script src="assets/javascript/app.js"></script>
+                <script src="assets/javascript/app.js"></script> 
 <!-- Added a link to meyerweb reset -->
-        <link rel="stylesheet" type="text/css" href="assets/css/reset.css">
+                <link rel="stylesheet" type="text/css" href="assets/css/reset.css">
 <!-- Added a link to Bootstrap-->
-        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta.2/css/bootstrap.min.css" integrity="sha384-PsH8R72JQ3SOdhVi3uxftmaW6Vc51MKb0q5P2rRUpPvrszuE4W1povHYgTpBfshb" crossorigin="anonymous">
+                <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta.2/css/bootstrap.min.css" integrity="sha384-PsH8R72JQ3SOdhVi3uxftmaW6Vc51MKb0q5P2rRUpPvrszuE4W1povHYgTpBfshb" crossorigin="anonymous">
 <!-- Added a link to stylesheet -->
-        <link rel="stylesheet" type="text/css" href="assets/css/style.css">
-        <title>Multi-Player Trivia</title>
-    </head>
-    <body>
-<div class="jumbotron jumbotron-fluid" id="header">
-<div class="container">
-        <h1 class="display-3">Pod Power Multiplayer Trivia!</h1>
-        <p class="lead">The Faster You Answer, The More Points You Get!</p>
-        <div id="readyButton">
-        <p class="lead">
-        <a class="btn btn-primary btn-lg"  href="#" role="button">Get Ready!</a>
-        </p>
-        </div>
-        </div>
-</div>
-<div class="container">
-<div class="wrapper">
-        <form>
-        <div class="form-row align-items-center">
-                <div class="col-sm-3">
-                <label class="sr-only" for="inlineFormInputName">Name</label>
-                <input type="text" class="form-control mb-2 mb-sm-0" id="userName" placeholder="Enter Name">
+                <link rel="stylesheet" type="text/css" href="assets/css/style.css">
+                <title>Multi-Player Trivia</title>
+        </head>
+        <body>
+                <div class="jumbotron jumbotron-fluid" id="header">
+                        <div class="container">
+                                        <h1 class="display-3">Pod Power Multiplayer Trivia!</h1>
+                                        <p class="lead">The Faster You Answer, The More Points You Get!</p>
+                                <div id="readyButton">
+                                        <p class="lead">
+                                                <a class="btn btn-primary btn-lg"  href="#" role="button">Get Ready!</a>
+                                        </p>
+                                </div>
+                        </div>
+                        <div class="container">
+                                <div class="wrapper">
+                                        <div class="form-row align-items-center">
+                                                <div class="col-sm-3">
+                                                        <label>Name</label>
+                                                        <input type="text" class="form-control mb-2 mb-sm-0" id="userName" placeholder="Enter Name">
+                                                        <button type="submit" id="submitButton" class="btn btn-primary">Submit</button>
+                                                </div>
+                                        </div>
+                                </div>
+                        </div>
                 </div>
+                <!-- Timer Box -->
+                <div class="row">
+                        <div class="col-sm-3"></div>
+                        <div class="col-sm-6" id="timer">
+                                <div class="card">
+                                        <div class="card-body">
+                                                <h4 class="card-title">Timer</h4>
+                                                <div class="time" id="countDown" ></div>
+                                        </div>
+                                </div>
+                        </div>
+                        <div class="col-sm-3"></div>
                 </div>
-                <div class="col-auto">
-                <button type="submit" id="submitButton" class="btn btn-primary">Submit</button>
+                <!-- question box -->
+                <div class="row">
+                        <div  class="card" id="questionBox">
+                                <div class="card-body row">
+                                </div>
+                        </div>
                 </div>
-        </div>
-        </form>
-<!-- Timer Box -->
-<div class="row">
-<div class="col-sm-3"></div>
-<div class="col-sm-6" id="timer">
-        <div class="card">
-        <div class="card-body">
-        <h4 class="card-title">Timer</h4>
-        <div class="time" id="countDown" ></div>
-        </div>
-        </div>
-</div>
-<div class="col-sm-3"></div>
-</div>
-<!-- question box -->
-  <div class="row">
-        <div  class="card" id="questionBox">
-          <div class="card-body row">
-        </div>
-  </div>
-        <!-- Player Cards -->
-        <div class="row", id="player-cards">
-        </div>
-        <footer class="footer">
-            <div class="container">
-                <span class="copyright">© Copyright 2017 Brandon Haines, Jason Leo, Michelle Le, and Andrew Kippur</span>
-            </div>
-        </footer>          
-    </body>
+                <!-- Player Cards -->
+                <div class="row justify-content-center" id="player-cards"></div>
+                <footer class="footer">
+                        <div class="container">
+                                <span class="copyright">© Copyright 2017 Brandon Haines, Jason Leo, Michelle Le, and Andrew Kippur</span>
+                        </div>
+                </footer>         
+        </body>
 </html>

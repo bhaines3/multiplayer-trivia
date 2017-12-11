@@ -1,7 +1,7 @@
 var userInfo = {
     userNames: [],
 };
-var avatarCall = function(username) {
+function avatarCall(username) {
     var thisWillBeADiv = $("<div/>");
     var thisWillBeACard = $("<div/>");
     var imgPlace = $("<div/>");
@@ -39,8 +39,10 @@ var avatarByUser = function (array) {
         avatarCall(`${array[i]}`);
     }
 };
-var clickListeners = function() {
-    $(document).on("click", "#submitButton", function(){
+function clickListeners() {
+    $(document).on("click", "#submitButton", function() {
+        $("#player-cards").empty();
+        console.log($("#userName").val().trim());
         var input = $("#userName").val().trim();
         console.log(input);
         userInfo.userNames.push(input);
@@ -48,7 +50,7 @@ var clickListeners = function() {
         avatarByUser(userInfo.userNames);
     });
 };
-$(document).ready(function() {
+$(document).ready(function () {
     clickListeners();
 //Michelle's code SORRY JASON IGNORE ME
     function startGame(hasStarted) {
@@ -74,7 +76,6 @@ $(document).ready(function() {
         console.log("The game has started");
       }
     }
-
     $("#readyButton").click(function() {
         $("#readyButton").empty();
         startGame(true);
