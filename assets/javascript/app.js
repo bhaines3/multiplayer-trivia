@@ -1,7 +1,7 @@
 var userInfo = {
     userNames: [],
 };
-var avatarCall = function(username) {
+function avatarCall(username) {
     var thisWillBeADiv = $("<div/>");
     var thisWillBeACard = $("<div/>");
     var imgPlace = $("<div/>");
@@ -39,8 +39,10 @@ var avatarByUser = function (array) {
         avatarCall(`${array[i]}`);
     }
 };
-var clickListeners = function() {
-    $(document).on("click", "#submitButton", function(){
+function clickListeners() {
+    $(document).on("click", "#submitButton", function() {
+        $("#player-cards").empty();
+        console.log($("#userName").val().trim());
         var input = $("#userName").val().trim();
         console.log(input);
         userInfo.userNames.push(input);
@@ -48,7 +50,7 @@ var clickListeners = function() {
         avatarByUser(userInfo.userNames);
     });
 };
-$(document).ready(function() {
+$(document).ready(function () {
     clickListeners();
 
 
@@ -98,7 +100,6 @@ $(document).ready(function() {
         });
 
     }
-
     function startTimer()
     {
         //timer begins using eggTimer function.
@@ -241,3 +242,8 @@ $(document).ready(function() {
 //Time = 10seconds
 //every 1 second, reduce time by 1
 //START TIMER
+    $("#readyButton").click(function() {
+        $("#readyButton").empty();
+        startGame(true);
+    });  
+});
