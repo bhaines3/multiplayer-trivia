@@ -1,3 +1,16 @@
+
+  // Initialize Firebase
+  var config = {
+    apiKey: "AIzaSyDbe5PAGMfowTdK799Rr-UwMmc85bHKSjQ",
+    authDomain: "multiplayer-trivia-game.firebaseapp.com",
+    databaseURL: "https://multiplayer-trivia-game.firebaseio.com",
+    projectId: "multiplayer-trivia-game",
+    storageBucket: "multiplayer-trivia-game.appspot.com",
+    messagingSenderId: "350872634445"
+  };
+  firebase.initializeApp(config);
+
+  
 var userInfo = {
     userNames: [],
 };
@@ -207,7 +220,7 @@ function timedOut() {
 function moveOn()
 {
     //if there are still questions left, setUpHTML and run tmer again.
-    if (qCount <= questionsArray.length)
+    if (qCount < questionsArray.length-1)
     {
         qCount++;
         setUpHTML();
