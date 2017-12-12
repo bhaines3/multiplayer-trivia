@@ -207,7 +207,7 @@ function timedOut() {
 function moveOn()
 {
     //if there are still questions left, setUpHTML and run tmer again.
-    if (qCount < questionsArray.length)
+    if (qCount <= questionsArray.length)
     {
         qCount++;
         setUpHTML();
@@ -217,6 +217,7 @@ function moveOn()
     }
     else
     {
+        alert("the game ends here")
         //final screen
     }
 }
