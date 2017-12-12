@@ -48,6 +48,8 @@ function clickListeners() {
         userInfo.userNames.push(input);
         console.log(userInfo.userNames);
         avatarByUser(userInfo.userNames);
+        
+        
     });
     //When the game started ** WE WILL NEED TO SOMEHOW DETERMINE WHEN ALL 4 PLAYERS HAVE SUCCESSFULLY CLICKED THIS BUTTON. For now, it is single player
     $(document).on("click", "#readyButton", function() {

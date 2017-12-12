@@ -22,3 +22,12 @@ body {
     text-align: center;
     color: white;
 }
+
+.jumbotron {
+    background-image: url("https://www.toptal.com/designers/subtlepatterns/patterns/doodles.png");
+    font-family: 'Ubuntu', sans-serif;
+}
+
+body {
+    font-family: 'Ubuntu', sans-serif;
+}
