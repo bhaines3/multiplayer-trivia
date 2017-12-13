@@ -10,10 +10,8 @@ messagingSenderId: "350872634445"
 firebase.initializeApp(config);
 
 var database = firebase.database();
-
-var userInfo = {
-    userNames: [],
-};
+var userName = "";
+var allUsers = [];
 function avatarCall(username) {
     var thisWillBeADiv = $("<div/>");
     var thisWillBeACard = $("<div/>");
@@ -58,23 +56,22 @@ function newName() {
     console.log($("#userName").val().trim());
     var input = $("#userName").val().trim();
     console.log(input);
-    userInfo.userNames.push(input);
-    console.log(userInfo.userNames);
-    avatarByUser(userInfo.userNames);
+    userName = input;
+    console.log(userName);
+    // send the name to array in firebase 
+    // 1st person has start game button available with 2 or more ready player
+    // on start game pull all users from firebase into allUsers array
     $("#inputButtons").find("input:text").val("");
+    $("#inputButtons").hide();
+    allUsers.push(userName);
+    avatarByUser(allUsers);
 }
 function clickListeners() {
     $(document).on("click", "#submitButton", function() {
-        if (userInfo.userNames.length < 4)
+        if (allUsers.length < 4)
         {
-            $("#player-cards").empty();
-            console.log($("#userName").val().trim());
-            var input = $("#userName").val().trim();
-            console.log(input);
-            userInfo.userNames.push(input);
-            console.log(userInfo.userNames);
-            avatarByUser(userInfo.userNames);
-            if (userInfo.userNames.length >= 2)
+            newName();
+            if (allUsers.length >= 2)
             {
                 $("#readyButton").html("<p class='lead'><a class='btn btn-outline-dark btn-lg'  href='#' role='button'>Get Ready!</a></p>");
             }
