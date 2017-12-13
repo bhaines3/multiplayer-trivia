@@ -10,7 +10,7 @@ messagingSenderId: "350872634445"
 firebase.initializeApp(config);
 
 var database = firebase.database();
-  
+
 var userInfo = {
     userNames: [],
 };
@@ -52,16 +52,25 @@ var avatarByUser = function (array) {
         avatarCall(`${array[i]}`);
     }
 };
+function newName() {
+    $("#player-cards").empty();
+    console.log($("#userName").val().trim());
+    var input = $("#userName").val().trim();
+    console.log(input);
+    userInfo.userNames.push(input);
+    console.log(userInfo.userNames);
+    avatarByUser(userInfo.userNames);
+    $("#inputButtons").find("input:text").val("");
+}
 function clickListeners() {
     $(document).on("click", "#submitButton", function() {
-        $("#player-cards").empty();
-        console.log($("#userName").val().trim());
-        var input = $("#userName").val().trim();
-        console.log(input);
-        userInfo.userNames.push(input);
-        console.log(userInfo.userNames);
-        avatarByUser(userInfo.userNames);
-        $("#inputButtons").find("input:text").val("");
+
+        newName();
+    });
+    $(document).keypress(function(e) {
+        if (e.which == 13) {
+            newName();
+        }
     });
     //When the game started ** WE WILL NEED TO SOMEHOW DETERMINE WHEN ALL 4 PLAYERS HAVE SUCCESSFULLY CLICKED THIS BUTTON. For now, it is single player
     $(document).on("click", "#readyButton", function() {
@@ -77,14 +86,12 @@ function clickListeners() {
     $(document).on("click", ".answer", function(event) {
         if ($(this).attr("id") === "correctAnswer")
         {
-            alert("woohoo!");
             //player has chosen correct answer
             clearInterval(timerMech);
             rightChoice();
         }
         else
         {
-            alert("boohoo");
             //player has chosen the wrong answer
             clearInterval(timerMech);
             wrongChoice();
