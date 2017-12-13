@@ -1,14 +1,14 @@
 
-  // Initialize Firebase
-  var config = {
-    apiKey: "AIzaSyDbe5PAGMfowTdK799Rr-UwMmc85bHKSjQ",
-    authDomain: "multiplayer-trivia-game.firebaseapp.com",
-    databaseURL: "https://multiplayer-trivia-game.firebaseio.com",
-    projectId: "multiplayer-trivia-game",
-    storageBucket: "multiplayer-trivia-game.appspot.com",
-    messagingSenderId: "350872634445"
-  };
-  firebase.initializeApp(config);
+// Initialize Firebase
+var config = {
+apiKey: "AIzaSyDbe5PAGMfowTdK799Rr-UwMmc85bHKSjQ",
+authDomain: "multiplayer-trivia-game.firebaseapp.com",
+databaseURL: "https://multiplayer-trivia-game.firebaseio.com",
+projectId: "multiplayer-trivia-game",
+storageBucket: "multiplayer-trivia-game.appspot.com",
+messagingSenderId: "350872634445"
+};
+firebase.initializeApp(config);
 
   var database = firebase.database();
   
@@ -62,8 +62,6 @@ function clickListeners() {
         userInfo.userNames.push(input);
         console.log(userInfo.userNames);
         avatarByUser(userInfo.userNames);
-        
-        
     });
     //When the game started ** WE WILL NEED TO SOMEHOW DETERMINE WHEN ALL 4 PLAYERS HAVE SUCCESSFULLY CLICKED THIS BUTTON. For now, it is single player
     $(document).on("click", "#readyButton", function() {
