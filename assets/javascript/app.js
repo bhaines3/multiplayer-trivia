@@ -10,6 +10,7 @@
   };
   firebase.initializeApp(config);
 
+  var database = firebase.database();
   
 var userInfo = {
     userNames: [],
