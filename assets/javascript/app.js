@@ -59,10 +59,11 @@ function newName() {
     userName = input;
     console.log(userName);
     // send the name to array in firebase 
+
     // 1st person has start game button available with 2 or more ready player
     // on start game pull all users from firebase into allUsers array
     $("#inputButtons").find("input:text").val("");
-    $("#inputButtons").hide();
+    // $("#inputButtons").hide();
     allUsers.push(userName);
     avatarByUser(allUsers);
 }
