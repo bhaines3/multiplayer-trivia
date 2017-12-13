@@ -81,7 +81,8 @@ function clickListeners() {
         else
         {
             console.log("There are enough players!")
-        newName();
+            newName();
+        }
     });
     $(document).keypress(function(e) {
         if (e.which == 13) {
