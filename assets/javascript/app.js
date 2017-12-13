@@ -52,18 +52,19 @@ var avatarByUser = function (array) {
 };
 function newName() {
     $("#player-cards").empty();
-    console.log($("#userName").val().trim());
     var input = $("#userName").val().trim();
-    console.log(input);
     userName = input;
-    console.log(userName);
-    // send the name to array in firebase 
-
+    // send the name to firebase
+    database.ref("/userNames").push(userName);
+    // retreive all users and push to the allUsers array
+        allUsers = [];
+    database.ref("/userNames").on("child_added", function(snapshot) { 
+        allUsers.push(snapshot.val());
+    });
     // 1st person has start game button available with 2 or more ready player
     // on start game pull all users from firebase into allUsers array
     $("#inputButtons").find("input:text").val("");
     // $("#inputButtons").hide();
-    allUsers.push(userName);
     avatarByUser(allUsers);
 }
 function clickListeners() {
