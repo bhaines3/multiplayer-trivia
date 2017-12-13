@@ -81,7 +81,8 @@ function clickListeners() {
         else
         {
             console.log("There are enough players!")
-        newName();
+            newName();
+        }
     });
     $(document).keypress(function(e) {
         if (e.which == 13) {
@@ -173,15 +174,14 @@ function startTimer()
 }
 //This function sets up the HTML to prepare for the placement of questions/answers
 function setUpHTML() {
-    $("#questionsBox").html("<div  class='card' id='questions'><div id='answers'></div><div class='card-body row'></div></div>");
     $("#timer").html("<div class='card'><div class='card-body'><h4 class='card-title'>Timer</h4><div class='time' id='countDown' ></div></div></div>");
-    $("#questions").empty();
+    $("#questionBox").empty();
     questionDiv = $("<div>");
     questionDiv.attr("id", "questionText");
-    $("#questions").prepend(questionDiv);
+    $("#questionBox").prepend(questionDiv);
     answersDiv = $("<div>");
     answersDiv.attr("id", "answers");
-    $("#questions").append(answersDiv);
+    $("#questionBox").append(answersDiv);
     for (var i = 1; i < 5; i++)
     {
         var answerButton = $("<button>");
@@ -234,7 +234,7 @@ function timedOut() {
     //add to the score
     timeOuts++;
     //update the text, clear the answers
-    $("#questions").text("Time is up!");
+    $("#questionBox").text("Time is up!");
     $("#answers").empty();
     //stop timer
     clearInterval(timerMech);
@@ -262,14 +262,14 @@ function moveOn()
 //HERE AND BELOW, STILL WORKING ON CLICK EVENTS WHEN USER CHOOSES CORRECT/WRONG ANSWER
 function rightChoice() {
     corrects++;
-    $("#questions").text("You got it!");
+    $("#questionBox").text("You got it!");
     $("#answers").empty();
     clearInterval(timerMech);
     setTimeout(moveOn, 4000);
 }
 function wrongChoice() {
     incorrects++;
-    $("#questions").text("You're wrong!");
+    $("#questionBox").text("You're wrong!");
     $("#answers").empty();
     clearInterval(timerMech);
     setTimeout(moveOn, 4000);
