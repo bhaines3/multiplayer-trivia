@@ -60,9 +60,11 @@ function newName() {
     userInfo.userNames.push(input);
     console.log(userInfo.userNames);
     avatarByUser(userInfo.userNames);
+    $("#inputButtons").find("input:text").val("");
 }
 function clickListeners() {
     $(document).on("click", "#submitButton", function() {
+
         newName();
     });
     $(document).keypress(function(e) {
