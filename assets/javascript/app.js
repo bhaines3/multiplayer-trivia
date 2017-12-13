@@ -1,4 +1,3 @@
-
 // Initialize Firebase
 var config = {
 apiKey: "AIzaSyDbe5PAGMfowTdK799Rr-UwMmc85bHKSjQ",
@@ -10,7 +9,7 @@ messagingSenderId: "350872634445"
 };
 firebase.initializeApp(config);
 
-  var database = firebase.database();
+var database = firebase.database();
   
 var userInfo = {
     userNames: [],
@@ -101,10 +100,8 @@ var corrects = 0;
 var incorrects = 0;
 var timeOuts = 0;
 var timerMech;
-
 //Sets up how the page first looks before start of game **STILL NEED TO MAKE PRETTY.
 $("#countDown").text("Time left: "+timer);
-
 function startGame()
 {
     var queryURL = "https://opentdb.com/api.php?amount=" +numberOfQuestions+ "&category="+categoryNum+"&difficulty=easy&type=multiple";
@@ -121,7 +118,6 @@ function startGame()
         setUpHTML();
         showQuestionsAnswers();
     });
-
 }
 function startTimer()
 {
@@ -144,7 +140,6 @@ function startTimer()
         }
     }
 }
-
 //This function sets up the HTML to prepare for the placement of questions/answers
 function setUpHTML() {
     $("#questionBox").empty();
@@ -163,7 +158,6 @@ function setUpHTML() {
             .appendTo($("#answers"));
     }
 }
-
 //function that displays the questions and answers
 function showQuestionsAnswers()
 {
@@ -214,7 +208,6 @@ function timedOut() {
     //wait 4 seconds and continue to next question or final screen
     setTimeout(moveOn, 4000);
 }
-
 //increases qCount to move to the next question
 function moveOn()
 {
@@ -233,7 +226,6 @@ function moveOn()
         //final screen
     }
 }
-
 //HERE AND BELOW, STILL WORKING ON CLICK EVENTS WHEN USER CHOOSES CORRECT/WRONG ANSWER
 function rightChoice() {
     corrects++;
