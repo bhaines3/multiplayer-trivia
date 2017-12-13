@@ -53,6 +53,7 @@ var avatarByUser = function (array) {
     }
 };
 function newName() {
+    $("#questionBox").hide();
     $("#player-cards").empty();
     console.log($("#userName").val().trim());
     var input = $("#userName").val().trim();
@@ -97,6 +98,8 @@ function clickListeners() {
         $("#readyButton").empty();
         $("#questionText").empty();
         $("#answers").empty();
+        $("#questionBox").show();
+        
 
         //see startGame(); function
         startGame();
