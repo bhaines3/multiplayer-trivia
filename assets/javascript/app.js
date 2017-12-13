@@ -55,16 +55,28 @@ var avatarByUser = function (array) {
 };
 function clickListeners() {
     $(document).on("click", "#submitButton", function() {
-        $("#player-cards").empty();
-        console.log($("#userName").val().trim());
-        var input = $("#userName").val().trim();
-        console.log(input);
-        userInfo.userNames.push(input);
-        console.log(userInfo.userNames);
-        avatarByUser(userInfo.userNames);
-        
-        
+        if (userInfo.userNames.length < 4)
+        {
+            $("#player-cards").empty();
+            console.log($("#userName").val().trim());
+            var input = $("#userName").val().trim();
+            console.log(input);
+            userInfo.userNames.push(input);
+            console.log(userInfo.userNames);
+            avatarByUser(userInfo.userNames);
+            if (userInfo.userNames.length >= 2)
+            {
+                $("#readyButton").html("<p class='lead'><a class='btn btn-outline-dark btn-lg'  href='#' role='button'>Get Ready!</a></p>");
+            }
+        }
+        else
+        {
+            console.log("There are enough players!")
+        }
     });
+
+    //This variable measures when a user has clicked an answer. Error prevention for if user is able to press the correct/wrong answer multiple times
+    var hasChosenAnswer = false;
     //When the game started ** WE WILL NEED TO SOMEHOW DETERMINE WHEN ALL 4 PLAYERS HAVE SUCCESSFULLY CLICKED THIS BUTTON. For now, it is single player
     $(document).on("click", "#readyButton", function() {
         //Prepping the layout to start the game and display our questions
@@ -77,19 +89,22 @@ function clickListeners() {
         console.log("The game has started");
     });
     $(document).on("click", ".answer", function(event) {
-        if ($(this).attr("id") === "correctAnswer")
+        if (hasChosenAnswer === false)
         {
-            alert("woohoo!");
-            //player has chosen correct answer
-            clearInterval(timerMech);
-            rightChoice();
-        }
-        else
-        {
-            alert("boohoo");
-            //player has chosen the wrong answer
-            clearInterval(timerMech);
-            wrongChoice();
+            if ($(this).attr("id") === "correctAnswer")
+            {
+                alert("woohoo!");
+                //player has chosen correct answer
+                clearInterval(timerMech);
+                rightChoice();
+            }
+            else
+            {
+                alert("boohoo");
+                //player has chosen the wrong answer
+                clearInterval(timerMech);
+                wrongChoice();
+            }
         }
     })
 };
@@ -119,8 +134,8 @@ function startGame()
         questionsArray = response.results;
 
         //starts the timer, sets up HTML for the questions, then displays questions/answers. See each function for more information
-        startTimer();
         setUpHTML();
+        startTimer();
         showQuestionsAnswers();
     });
 
@@ -149,13 +164,15 @@ function startTimer()
 
 //This function sets up the HTML to prepare for the placement of questions/answers
 function setUpHTML() {
-    $("#questionBox").empty();
+    $("#questionsBox").html("<div  class='card' id='questions'><div id='answers'></div><div class='card-body row'></div></div>");
+    $("#timer").html("<div class='card'><div class='card-body'><h4 class='card-title'>Timer</h4><div class='time' id='countDown' ></div></div></div>");
+    $("#questions").empty();
     questionDiv = $("<div>");
     questionDiv.attr("id", "questionText");
-    $("#questionBox").prepend(questionDiv);
+    $("#questions").prepend(questionDiv);
     answersDiv = $("<div>");
     answersDiv.attr("id", "answers");
-    $("#questionBox").append(answersDiv);
+    $("#questions").append(answersDiv);
     for (var i = 1; i < 5; i++)
     {
         var answerButton = $("<button>");
@@ -181,26 +198,26 @@ function showQuestionsAnswers()
     {
         for (var i = 0; i < 3; i++)
         {
-            $("#answer"+(i+2)).html(questionsArray[qCount].incorrect_answers[i]);
+            $("#answer"+(i+2)).text(questionsArray[qCount].incorrect_answers[i]);
         }
     }
     else if (randomCorrect === 2)
     {
-        $("#answer1").html(questionsArray[qCount].incorrect_answers[0]);
-        $("#answer3").html(questionsArray[qCount].incorrect_answers[1]);
-        $("#answer4").html(questionsArray[qCount].incorrect_answers[2]);
+        $("#answer1").text(questionsArray[qCount].incorrect_answers[0]);
+        $("#answer3").text(questionsArray[qCount].incorrect_answers[1]);
+        $("#answer4").text(questionsArray[qCount].incorrect_answers[2]);
     }
     else if (randomCorrect === 3)
     {
-        $("#answer1").html(questionsArray[qCount].incorrect_answers[0]);
-        $("#answer2").html(questionsArray[qCount].incorrect_answers[1]);
-        $("#answer4").html(questionsArray[qCount].incorrect_answers[2]);
+        $("#answer1").text(questionsArray[qCount].incorrect_answers[0]);
+        $("#answer2").text(questionsArray[qCount].incorrect_answers[1]);
+        $("#answer4").text(questionsArray[qCount].incorrect_answers[2]);
     }
     else if (randomCorrect === 4)
     {
         for (var i = 0; i < 3; i++)
         {
-            $("#answer"+(i+1)).html(questionsArray[qCount].incorrect_answers[i]);
+            $("#answer"+(i+1)).text(questionsArray[qCount].incorrect_answers[i]);
         }
     }
 }
@@ -209,7 +226,7 @@ function timedOut() {
     //add to the score
     timeOuts++;
     //update the text, clear the answers
-    $("#questionBox").text("Time is up!");
+    $("#questions").text("Time is up!");
     $("#answers").empty();
     //stop timer
     clearInterval(timerMech);
@@ -239,14 +256,14 @@ function moveOn()
 //HERE AND BELOW, STILL WORKING ON CLICK EVENTS WHEN USER CHOOSES CORRECT/WRONG ANSWER
 function rightChoice() {
     corrects++;
-    $("#questionBox").text("You got it!");
+    $("#questions").text("You got it!");
     $("#answers").empty();
     clearInterval(timerMech);
     setTimeout(moveOn, 4000);
 }
 function wrongChoice() {
     incorrects++;
-    $("#questionBox").text("You're wrong!");
+    $("#questions").text("You're wrong!");
     $("#answers").empty();
     clearInterval(timerMech);
     setTimeout(moveOn, 4000);
