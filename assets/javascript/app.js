@@ -1,17 +1,16 @@
+// Initialize Firebase
+var config = {
+apiKey: "AIzaSyDbe5PAGMfowTdK799Rr-UwMmc85bHKSjQ",
+authDomain: "multiplayer-trivia-game.firebaseapp.com",
+databaseURL: "https://multiplayer-trivia-game.firebaseio.com",
+projectId: "multiplayer-trivia-game",
+storageBucket: "multiplayer-trivia-game.appspot.com",
+messagingSenderId: "350872634445"
+};
+firebase.initializeApp(config);
 
-  // Initialize Firebase
-  var config = {
-    apiKey: "AIzaSyDbe5PAGMfowTdK799Rr-UwMmc85bHKSjQ",
-    authDomain: "multiplayer-trivia-game.firebaseapp.com",
-    databaseURL: "https://multiplayer-trivia-game.firebaseio.com",
-    projectId: "multiplayer-trivia-game",
-    storageBucket: "multiplayer-trivia-game.appspot.com",
-    messagingSenderId: "350872634445"
-  };
-  firebase.initializeApp(config);
+var database = firebase.database();
 
-  var database = firebase.database();
-  
 var userInfo = {
     userNames: [],
 };
@@ -53,6 +52,16 @@ var avatarByUser = function (array) {
         avatarCall(`${array[i]}`);
     }
 };
+function newName() {
+    $("#player-cards").empty();
+    console.log($("#userName").val().trim());
+    var input = $("#userName").val().trim();
+    console.log(input);
+    userInfo.userNames.push(input);
+    console.log(userInfo.userNames);
+    avatarByUser(userInfo.userNames);
+    $("#inputButtons").find("input:text").val("");
+}
 function clickListeners() {
     $(document).on("click", "#submitButton", function() {
         if (userInfo.userNames.length < 4)
@@ -72,9 +81,13 @@ function clickListeners() {
         else
         {
             console.log("There are enough players!")
+        newName();
+    });
+    $(document).keypress(function(e) {
+        if (e.which == 13) {
+            newName();
         }
     });
-
     //This variable measures when a user has clicked an answer. Error prevention for if user is able to press the correct/wrong answer multiple times
     var hasChosenAnswer = false;
     //When the game started ** WE WILL NEED TO SOMEHOW DETERMINE WHEN ALL 4 PLAYERS HAVE SUCCESSFULLY CLICKED THIS BUTTON. For now, it is single player
@@ -93,20 +106,20 @@ function clickListeners() {
         {
             if ($(this).attr("id") === "correctAnswer")
             {
-                alert("woohoo!");
                 //player has chosen correct answer
                 clearInterval(timerMech);
                 rightChoice();
+                hasChosenAnswer = true;
             }
             else
             {
-                alert("boohoo");
                 //player has chosen the wrong answer
                 clearInterval(timerMech);
                 wrongChoice();
+                hasChosenAnswer = true;
             }
         }
-    })
+    });
 };
 //Michelle's code SORRY JASON IGNORE ME
 var numberOfQuestions = 10;
@@ -118,10 +131,8 @@ var corrects = 0;
 var incorrects = 0;
 var timeOuts = 0;
 var timerMech;
-
 //Sets up how the page first looks before start of game **STILL NEED TO MAKE PRETTY.
 $("#countDown").text("Time left: "+timer);
-
 function startGame()
 {
     var queryURL = "https://opentdb.com/api.php?amount=" +numberOfQuestions+ "&category="+categoryNum+"&difficulty=easy&type=multiple";
@@ -138,7 +149,6 @@ function startGame()
         startTimer();
         showQuestionsAnswers();
     });
-
 }
 function startTimer()
 {
@@ -161,7 +171,6 @@ function startTimer()
         }
     }
 }
-
 //This function sets up the HTML to prepare for the placement of questions/answers
 function setUpHTML() {
     $("#questionsBox").html("<div  class='card' id='questions'><div id='answers'></div><div class='card-body row'></div></div>");
@@ -182,7 +191,6 @@ function setUpHTML() {
             .appendTo($("#answers"));
     }
 }
-
 //function that displays the questions and answers
 function showQuestionsAnswers()
 {
@@ -233,7 +241,6 @@ function timedOut() {
     //wait 4 seconds and continue to next question or final screen
     setTimeout(moveOn, 4000);
 }
-
 //increases qCount to move to the next question
 function moveOn()
 {
@@ -252,7 +259,6 @@ function moveOn()
         //final screen
     }
 }
-
 //HERE AND BELOW, STILL WORKING ON CLICK EVENTS WHEN USER CHOOSES CORRECT/WRONG ANSWER
 function rightChoice() {
     corrects++;

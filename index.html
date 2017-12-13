@@ -6,6 +6,7 @@
                 <script src="https://www.gstatic.com/firebasejs/live/3.0/firebase.js"></script>
 <!-- Added link to the jQuery Library -->
                 <script src="https://code.jquery.com/jquery-1.11.3.min.js"></script>
+
 <!-- Added a link to app.js -->
                 <script src="assets/javascript/app.js"></script> 
 <!-- Added a link to google font -->
@@ -23,8 +24,8 @@
         <body>
                 <div class="jumbotron jumbotron-fluid" id="header">
                         <div class="container">
-                                        <h1 class="display-3 text-center">Pod Power Multiplayer Trivia!</h1>
-                                        <p class="lead text-center">The Faster You Answer, The More Points You Get!</p>
+                                <h1 class="display-3 text-center">Pod Power Multiplayer Trivia!</h1>
+                                <p class="lead text-center">The Faster You Answer, The More Points You Get!</p>
                                 <div id="readyButton">
                                         
                                 </div>
@@ -32,11 +33,11 @@
                         <div class="container">
                                 <div class="wrapper">
                                         <div class="form-row align-items-center">
-                                            <div class="col-sm-3">
-                                                <label>Name</label>
-                                                    <input type="text" class="form-control mb-2 mb-sm-0" id="userName" placeholder="Enter Name">
-                                                    <button type="submit" id="submitButton" class="btn btn-outline-dark mt-2">Submit</button>
-                                            </div>
+                                                <div class="col-sm-3 form-group" id="inputButtons">
+                                                        <label>Name</label>
+                                                        <input type="text" class="form-control mb-2 mb-sm-0" id="userName" placeholder="Enter Name">
+                                                        <button type="submit" id="submitButton" class="btn btn-outline-dark mt-2">Submit</button>
+                                                </div>
                                         </div>
                                 </div>
                         </div>
