@@ -72,6 +72,7 @@ function isGameReady() {
     }
 };
 function newName() {
+    $("#questionBox").hide();
     $("#player-cards").empty();
     var input = $("#userName").val().trim();
     userName = input;
@@ -114,6 +115,7 @@ function clickListeners() {
             $("#readyButton").empty();
             $("#questionText").empty();
             $("#answers").empty();
+            $("#questionBox").show();
 
             //see startGame(); function
             startGame();
@@ -128,14 +130,12 @@ function clickListeners() {
                 //player has chosen correct answer
                 clearInterval(timerMech);
                 rightChoice();
-                hasChosenAnswer = true;
             }
             else
             {
                 //player has chosen the wrong answer
                 clearInterval(timerMech);
                 wrongChoice();
-                hasChosenAnswer = true;
             }
         }
     });
@@ -183,14 +183,15 @@ function startTimer()
 }
 //This function sets up the HTML to prepare for the placement of questions/answers
 function setUpHTML() {
+    $("#questionsBox").html("<div  class='card' id='question'><div id='questionText'></div><div id='answers'></div><div class='card-body row'></div></div>");
     $("#timer").html("<div class='card'><div class='card-body'><h4 class='card-title'>Timer</h4><div class='time' id='countDown' ></div></div></div>");
-    $("#questionBox").empty();
+    $("#question").empty();
     questionDiv = $("<div>");
     questionDiv.attr("id", "questionText");
-    $("#questionBox").prepend(questionDiv);
+    $("#question").prepend(questionDiv);
     answersDiv = $("<div>");
     answersDiv.attr("id", "answers");
-    $("#questionBox").append(answersDiv);
+    $("#question").append(answersDiv);
     for (var i = 1; i < 5; i++)
     {
         var answerButton = $("<button>");
@@ -203,6 +204,7 @@ function setUpHTML() {
 //function that displays the questions and answers
 function showQuestionsAnswers()
 {
+    hasChosenAnswer=false;
     //displays questions in questionsText
     $("#questionText").html(questionsArray[qCount].question);
 
@@ -243,7 +245,7 @@ function timedOut() {
     //add to the score
     timeOuts++;
     //update the text, clear the answers
-    $("#questionBox").text("Time is up!");
+    $("#question").text("Time is up!");
     $("#answers").empty();
     //stop timer
     clearInterval(timerMech);
@@ -271,14 +273,16 @@ function moveOn()
 //HERE AND BELOW, STILL WORKING ON CLICK EVENTS WHEN USER CHOOSES CORRECT/WRONG ANSWER
 function rightChoice() {
     corrects++;
-    $("#questionBox").text("You got it!");
+    hasChosenAnswer = true;
+    $("#question").text("You got it!");
     $("#answers").empty();
     clearInterval(timerMech);
     setTimeout(moveOn, 4000);
 }
 function wrongChoice() {
     incorrects++;
-    $("#questionBox").text("You're wrong!");
+    hasChosenAnswer = true;
+    $("#question").text("You're wrong!");
     $("#answers").empty();
     clearInterval(timerMech);
     setTimeout(moveOn, 4000);
