@@ -8,10 +8,24 @@ storageBucket: "multiplayer-trivia-game.appspot.com",
 messagingSenderId: "350872634445"
 };
 firebase.initializeApp(config);
-
+// vars
 var database = firebase.database();
 var userName = "";
 var allUsers = [];
+var numberOfQuestions = 10;
+var categoryNum = 9;
+var questionsArray = [];
+var timer = 10;
+var qCount = 0;
+var corrects = 0;
+var incorrects = 0;
+var timeOuts = 0;
+var timerMech;
+// var to see if we have 4 players before allowing the game to start
+var notReadyYet = true;
+//This variable measures when a user has clicked an answer. Error prevention for if user is able to press the correct/wrong answer multiple times
+var hasChosenAnswer = false;
+// functions
 function avatarCall(username) {
     var thisWillBeADiv = $("<div/>");
     var thisWillBeACard = $("<div/>");
@@ -50,6 +64,13 @@ var avatarByUser = function (array) {
         avatarCall(`${array[i]}`);
     }
 };
+function isGameReady() {
+    if (allUsers.length = 4) {
+        notReadyYet = false;
+    } else {
+        return
+    }
+};
 function newName() {
     $("#questionBox").hide();
     $("#player-cards").empty();
@@ -58,51 +79,48 @@ function newName() {
     // send the name to firebase
     database.ref("/userNames").push(userName);
     // retreive all users and push to the allUsers array
-        allUsers = [];
     database.ref("/userNames").on("child_added", function(snapshot) { 
         allUsers.push(snapshot.val());
     });
+    if (allUsers.length = 1) {
+        $("#readyButton")
+            .html("<p class='lead'><a class='btn btn-outline-dark btn-lg'  href='#' role='button'>Get Ready!</a></p>");
+    };
     // 1st person has start game button available with 2 or more ready player
     // on start game pull all users from firebase into allUsers array
-    $("#inputButtons").find("input:text").val("");
     // $("#inputButtons").hide();
     avatarByUser(allUsers);
-}
+    $("#inputButtons").find("input:text").val("");
+    isGameReady();
+};
+function emptyRoom() {
+    //a line of code that does not work:
+    database.ref("/userNames").empty();
+};
 function clickListeners() {
     $(document).on("click", "#submitButton", function() {
-        if (allUsers.length < 4)
-        {
-            newName();
-            if (allUsers.length >= 2)
-            {
-                $("#readyButton").html("<p class='lead'><a class='btn btn-outline-dark btn-lg'  href='#' role='button'>Get Ready!</a></p>");
-            }
-        }
-        else
-        {
-            console.log("There are enough players!")
-            newName();
-        }
+        newName();
     });
     $(document).keypress(function(e) {
         if (e.which == 13) {
             newName();
         }
     });
-    //This variable measures when a user has clicked an answer. Error prevention for if user is able to press the correct/wrong answer multiple times
-    var hasChosenAnswer = false;
     //When the game started ** WE WILL NEED TO SOMEHOW DETERMINE WHEN ALL 4 PLAYERS HAVE SUCCESSFULLY CLICKED THIS BUTTON. For now, it is single player
     $(document).on("click", "#readyButton", function() {
-        //Prepping the layout to start the game and display our questions
-        $("#readyButton").empty();
-        $("#questionText").empty();
-        $("#answers").empty();
-        $("#questionBox").show();
-        
+        if (notReadyYet) {
+            return
+        } else {
+            //Prepping the layout to start the game and display our questions
+            $("#readyButton").empty();
+            $("#questionText").empty();
+            $("#answers").empty();
+            $("#questionBox").show();
 
-        //see startGame(); function
-        startGame();
-        console.log("The game has started");
+            //see startGame(); function
+            startGame();
+            console.log("The game has started");
+        }
     });
     $(document).on("click", ".answer", function(event) {
         if (hasChosenAnswer === false)
@@ -123,15 +141,6 @@ function clickListeners() {
     });
 };
 //Michelle's code SORRY JASON IGNORE ME
-var numberOfQuestions = 10;
-var categoryNum = 9;
-var questionsArray = [];
-var timer = 10;
-var qCount = 0;
-var corrects = 0;
-var incorrects = 0;
-var timeOuts = 0;
-var timerMech;
 //Sets up how the page first looks before start of game **STILL NEED TO MAKE PRETTY.
 $("#countDown").text("Time left: "+timer);
 function startGame()
