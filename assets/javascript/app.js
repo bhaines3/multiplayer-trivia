@@ -55,7 +55,7 @@ function avatarCall(username) {
         .appendTo(thisWillBeACard);
     thisWillBeACard
         .addClass("card")
-        .css({"width":"20rem"})
+        .css({"width":"15rem"})
         .appendTo(thisWillBeADiv);
     thisWillBeADiv
         .attr("class", "col-3")
@@ -73,6 +73,9 @@ function isGameReady() {
         return
     }
 };
+function capitalize(name) {
+    return name.charAt(0).toUpperCase() + name.slice(1);
+}
 function newName() {
     // $("#questionBox").hide();
     // $("#player-cards").empty();
@@ -88,32 +91,40 @@ function newName() {
     var input = capitalize($("#userName").val().trim());
     userName = input;
     playerRef = database.ref("/players/" + playerNumber);
-
+    // set up player info in database
     playerRef.set({
-      name: userName,
-      wins: 0,
-      losses: 0,
-      choice: null
+        // name     
+        name: userName,
+        // correct answers (per round?)
+        correct: 0,
+        // incorrect answers
+        incorrect: 0,
+        // plan to insert objects into timePairs representing 
+        // {which-question, guess-time} 
+        // for CORRECT guesses only to compare at the end of the round
+        times: "no times yet",
     });
-
+    // on start game pull all users from firebase into allUsers array
+    // $("#inputButtons").hide();
+    populateArray();
+    $("#inputButtons").find("input:text").val("");
+    whatNext();
+};
+function whatNext () {
     if (allUsers.length === 1) {
         $("#readyButton")
             .html("<p class='lead'><a class='btn btn-outline-dark btn-lg'  href='#' role='button'>Get Ready!</a></p>");
     };
-    // 1st person has start game button available with 2 or more ready player
-    // on start game pull all users from firebase into allUsers array
-    // $("#inputButtons").hide();
-    avatarByUser(allUsers);
-    $("#inputButtons").find("input:text").val("");
     isGameReady();
-    function capitalize(name) {
-        return name.charAt(0).toUpperCase() + name.slice(1);
-    }
-
     playerRef.onDisconnect().remove();
+}
+function populateArray() {
+    playerRef.on("child_added", function(snapshot) { 
+        //allUsers.push(snapshot.val());
+        console.log(snapshot.val());
+        //console.log(allUsers);
+    });
 };
-
-
 function clickListeners() {
     $(document).on("click", "#submitButton", function() {
         newName();
