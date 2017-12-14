@@ -10,6 +10,8 @@ messagingSenderId: "350872634445"
 firebase.initializeApp(config);
 // vars
 var database = firebase.database();
+var playersRef = database.ref("players");
+var playerNumber = 0;
 var userName = "";
 var allUsers = [];
 var numberOfQuestions = 10;
@@ -65,24 +67,36 @@ var avatarByUser = function (array) {
     }
 };
 function isGameReady() {
-    if (allUsers.length = 4) {
+    if (allUsers.length === 4) {
         notReadyYet = false;
     } else {
         return
     }
 };
 function newName() {
-    $("#questionBox").hide();
-    $("#player-cards").empty();
-    var input = $("#userName").val().trim();
+    // $("#questionBox").hide();
+    // $("#player-cards").empty();
+    if (playerNumber < 4)
+    {
+        playerNumber++;
+
+    }
+    else if (playerNumber === 4)
+    {
+        alert("There are already enough players!");
+    }
+    var input = capitalize($("#userName").val().trim());
     userName = input;
-    // send the name to firebase
-    database.ref("/userNames").push(userName);
-    // retreive all users and push to the allUsers array
-    database.ref("/userNames").on("child_added", function(snapshot) { 
-        allUsers.push(snapshot.val());
+    playerRef = database.ref("/players/" + playerNumber);
+
+    playerRef.set({
+      name: userName,
+      wins: 0,
+      losses: 0,
+      choice: null
     });
-    if (allUsers.length = 1) {
+
+    if (allUsers.length === 1) {
         $("#readyButton")
             .html("<p class='lead'><a class='btn btn-outline-dark btn-lg'  href='#' role='button'>Get Ready!</a></p>");
     };
@@ -92,11 +106,14 @@ function newName() {
     avatarByUser(allUsers);
     $("#inputButtons").find("input:text").val("");
     isGameReady();
+    function capitalize(name) {
+        return name.charAt(0).toUpperCase() + name.slice(1);
+    }
+
+    playerRef.onDisconnect().remove();
 };
-function emptyRoom() {
-    //a line of code that does not work:
-    database.ref("/userNames").empty();
-};
+
+
 function clickListeners() {
     $(document).on("click", "#submitButton", function() {
         newName();
