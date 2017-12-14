@@ -11,6 +11,7 @@ firebase.initializeApp(config);
 // vars
 var database = firebase.database();
 var playersRef = database.ref("players");
+var playerRef;
 var playerNumber = 0;
 var userName = "";
 var allUsers = [];
@@ -90,6 +91,7 @@ function newName() {
     }
     var input = capitalize($("#userName").val().trim());
     userName = input;
+    allUsers.push(userName);
     playerRef = database.ref("/players/" + playerNumber);
     // set up player info in database
     playerRef.set({
@@ -106,6 +108,9 @@ function newName() {
     });
     // on start game pull all users from firebase into allUsers array
     // $("#inputButtons").hide();
+    playersRef.once("value", function(snapshot) {
+        console.log(snapshot.child(1).val());
+    })
     populateArray();
     $("#inputButtons").find("input:text").val("");
     whatNext();
@@ -240,31 +245,31 @@ function showQuestionsAnswers()
     var randomCorrect = Math.floor(Math.random() * 4)+1;
     $("#answer"+randomCorrect)
         .attr("id", "correctAnswer")
-        .text(questionsArray[qCount].correct_answer);
+        .html(questionsArray[qCount].correct_answer);
     if (randomCorrect === 1)
     {
         for (var i = 0; i < 3; i++)
         {
-            $("#answer"+(i+2)).text(questionsArray[qCount].incorrect_answers[i]);
+            $("#answer"+(i+2)).html(questionsArray[qCount].incorrect_answers[i]);
         }
     }
     else if (randomCorrect === 2)
     {
-        $("#answer1").text(questionsArray[qCount].incorrect_answers[0]);
-        $("#answer3").text(questionsArray[qCount].incorrect_answers[1]);
-        $("#answer4").text(questionsArray[qCount].incorrect_answers[2]);
+        $("#answer1").html(questionsArray[qCount].incorrect_answers[0]);
+        $("#answer3").html(questionsArray[qCount].incorrect_answers[1]);
+        $("#answer4").html(questionsArray[qCount].incorrect_answers[2]);
     }
     else if (randomCorrect === 3)
     {
-        $("#answer1").text(questionsArray[qCount].incorrect_answers[0]);
-        $("#answer2").text(questionsArray[qCount].incorrect_answers[1]);
-        $("#answer4").text(questionsArray[qCount].incorrect_answers[2]);
+        $("#answer1").html(questionsArray[qCount].incorrect_answers[0]);
+        $("#answer2").html(questionsArray[qCount].incorrect_answers[1]);
+        $("#answer4").html(questionsArray[qCount].incorrect_answers[2]);
     }
     else if (randomCorrect === 4)
     {
         for (var i = 0; i < 3; i++)
         {
-            $("#answer"+(i+1)).text(questionsArray[qCount].incorrect_answers[i]);
+            $("#answer"+(i+1)).html(questionsArray[qCount].incorrect_answers[i]);
         }
     }
 }
