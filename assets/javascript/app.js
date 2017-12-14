@@ -91,7 +91,6 @@ function newName() {
     }
     var input = capitalize($("#userName").val().trim());
     userName = input;
-    allUsers.push(userName);
     playerRef = database.ref("/players/" + playerNumber);
     // set up player info in database
     playerRef.set({
@@ -108,9 +107,6 @@ function newName() {
     });
     // on start game pull all users from firebase into allUsers array
     // $("#inputButtons").hide();
-    playersRef.once("value", function(snapshot) {
-        console.log(snapshot.child(1).val());
-    })
     populateArray();
     $("#inputButtons").find("input:text").val("");
     whatNext();
@@ -124,13 +120,38 @@ function whatNext () {
     playerRef.onDisconnect().remove();
 }
 function populateArray() {
-    playerRef.on("child_added", function(snapshot) { 
-        //allUsers.push(snapshot.val());
-        console.log(snapshot.val());
-        //console.log(allUsers);
-    });
+    if (allUsers.length === 0) {
+        playersRef.once("value", function(snapshot) { 
+            allUsers.push(snapshot.child(1).val().name);
+            console.log(allUsers)
+        });
+    } else if (allUsers.length === 1) {
+        playersRef.once("value", function(snapshot) { 
+            allUsers.push(snapshot.child(2).val().name);
+            console.log(allUsers)
+        });
+    } else if (allUsers.length === 2) {
+        playersRef.once("value", function(snapshot) { 
+            allUsers.push(snapshot.child(3).val().name);
+            console.log(allUsers)
+        });
+    } else if (allUsers.length === 3) {
+        playersRef.once("value", function(snapshot) { 
+            allUsers.push(snapshot.child(4).val().name);
+            console.log(allUsers)
+            var makeCardsButton = $("<button>");
+            makeCardsButton
+                .html("Make the Cards!")
+                .attr("id", "makeCards")
+                .css({"float":"right"})
+                .appendTo("#header");
+        });
+    };
 };
 function clickListeners() {
+    $(document).on("click", "#makeCards", function() {
+        avatarByUser(allUsers);
+    });
     $(document).on("click", "#submitButton", function() {
         newName();
     });
