@@ -8,6 +8,7 @@ storageBucket: "multiplayer-trivia-game.appspot.com",
 messagingSenderId: "350872634445"
 };
 firebase.initializeApp(config);
+
 // vars
 var database = firebase.database();
 var playersRef = database.ref("players");
@@ -72,7 +73,7 @@ function avatarCall(username) {
         .attr("class", "col-3")
         .appendTo($("#player-cards"));
 };
-var avatarByUser = function (array) {
+function avatarByUser(array) {
     for (var i = 0; i < array.length; i++) {
         avatarCall(`${array[i]}`);
     }
@@ -208,7 +209,7 @@ function clickListeners() {
             $("#readyButton").empty();
             $("#questionText").empty();
             $("#answers").empty();
-            $("#questionBox").show();
+            
 
             //see startGame(); function
             startGame();
@@ -249,6 +250,8 @@ function startGame()
 
         //starts the timer, sets up HTML for the questions, then displays questions/answers. See each function for more information
         setUpHTML();
+        $("#questionsBox").show();
+        $("#timer").show();
         startTimer();
         placeQuestionsAnswersToFirebase();
         showQuestionsAnswers();
@@ -290,8 +293,8 @@ function startTimer()
 }
 //This function sets up the HTML to prepare for the placement of questions/answers
 function setUpHTML() {
-    $("#questionsBox").html("<div  class='card' id='question'><div id='questionText'></div><div id='answers'></div><div class='card-body row'></div></div>");
-    $("#timer").html("<div class='card'><div class='card-body'><h4 class='card-title'>Timer</h4><div class='time' id='countDown' ></div></div></div>");
+    // $("#questionsBox").html("<div  class='card' id='question'><div id='questionText'></div><div id='answers'></div><div class='card-body row'></div></div>");
+    // $("#timer").html("<div class='card'><div class='card-body'><h4 class='card-title'>Timer</h4><div class='time' id='countDown' ></div></div></div>");
     $("#question").empty();
     questionDiv = $("<div>");
     questionDiv.attr("id", "questionText");
@@ -400,6 +403,8 @@ function wrongChoice() {
 }
 $(document).ready(function () {
     clickListeners();
+    $("#questionsBox").hide();
+    $("#timer").hide();
     //playersRef.on("value", function(snapshot) {
       //  console.log(snapshot.val());
     //})
