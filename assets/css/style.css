@@ -1,6 +1,6 @@
 .avatar-image {
-    width: 80px;
-    height: 80px;
+   
+   
 }
 
 html {
@@ -30,4 +30,25 @@ body {
 
 body {
     font-family: 'Ubuntu', sans-serif;
+    background-image: url("https://www.toptal.com/designers/subtlepatterns/patterns/doodles.png");
+}
+
+.row {
+    margin-right: 0px;
+    margin-left: 0px;
+}
+
+.card-body {
+    background-image: url("https://www.toptal.com/designers/subtlepatterns/patterns/escheresque_ste.png");
+    color: whitesmoke;
+    opacity: 0.80;
+}
+
+.score, h4 {
+    text-align: center;
+}
+
+.card {
+    margin-bottom: 20px;
+    border-radius: 25px;
 }
