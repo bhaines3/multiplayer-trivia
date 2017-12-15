@@ -106,10 +106,10 @@ function newName() {
         times: "no times yet",
     });
     // on start game pull all users from firebase into allUsers array
-    // $("#inputButtons").hide();
+    $("#inputButtons").hide();
     populateArray();
     $("#inputButtons").find("input:text").val("");
-    whatNext();
+    //whatNext();
 };
 function whatNext () {
     if (allUsers.length === 1) {
@@ -117,7 +117,7 @@ function whatNext () {
             .html("<p class='lead'><a class='btn btn-outline-dark btn-lg'  href='#' role='button'>Get Ready!</a></p>");
     };
     isGameReady();
-    playerRef.onDisconnect().remove();
+    //playerRef.onDisconnect().remove();
 }
 function populateArray() {
     if (allUsers.length === 0) {
@@ -343,4 +343,7 @@ function wrongChoice() {
 }
 $(document).ready(function () {
     clickListeners();
+    //playersRef.on("value", function(snapshot) {
+      //  console.log(snapshot.val());
+    //})
 });
