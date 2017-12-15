@@ -50,5 +50,9 @@ body {
 
 .card {
     margin-bottom: 20px;
-    border-radius: 25px;
+}
+
+#questionsBox {
+    background-image: url("https://www.toptal.com/designers/subtlepatterns/patterns/escheresque_ste.png"); 
+    opacity: 0.80;
 }
