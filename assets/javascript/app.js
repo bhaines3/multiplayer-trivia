@@ -66,7 +66,7 @@ function avatarCall(username) {
         .attr("class", "col-3")
         .appendTo($("#player-cards"));
 };
-var avatarByUser = function (array) {
+function avatarByUser(array) {
     for (var i = 0; i < array.length; i++) {
         avatarCall(`${array[i]}`);
     }
@@ -91,6 +91,7 @@ function newName() {
     else if (playerNumber === 4)
     {
         alert("There are already enough players!");
+        return;
     }
     var input = capitalize($("#userName").val().trim());
     userName = input;
@@ -123,34 +124,29 @@ function whatNext () {
             .html("<p class='lead'><a class='btn btn-outline-dark btn-lg'  href='#' role='button'>Get Ready!</a></p>");
     };
     isGameReady();
-    //playerRef.onDisconnect().remove();
+    playerRef.onDisconnect().remove();
 }
 function populateArray() {
+    $("#player-cards").empty();
     if (allUsers.length === 0) {
         playersRef.once("value", function(snapshot) { 
             allUsers.push(snapshot.child(1).val().name);
-            console.log(allUsers)
+            avatarByUser(allUsers);
         });
     } else if (allUsers.length === 1) {
         playersRef.once("value", function(snapshot) { 
             allUsers.push(snapshot.child(2).val().name);
-            console.log(allUsers)
+            avatarByUser(allUsers);
         });
     } else if (allUsers.length === 2) {
         playersRef.once("value", function(snapshot) { 
             allUsers.push(snapshot.child(3).val().name);
-            console.log(allUsers)
+            avatarByUser(allUsers);
         });
     } else if (allUsers.length === 3) {
         playersRef.once("value", function(snapshot) { 
             allUsers.push(snapshot.child(4).val().name);
-            console.log(allUsers)
-            var makeCardsButton = $("<button>");
-            makeCardsButton
-                .html("Make the Cards!")
-                .attr("id", "makeCards")
-                .css({"float":"right"})
-                .appendTo("#header");
+            avatarByUser(allUsers);
         });
     };
 };
