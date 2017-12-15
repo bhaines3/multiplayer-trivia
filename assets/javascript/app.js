@@ -114,7 +114,7 @@ function newName() {
     //$("#inputButtons").hide();
     populateArray();
     $("#inputButtons").find("input:text").val("");
-    //whatNext();
+    whatNext();
 };
 
 function whatNext () {
