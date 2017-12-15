@@ -28,6 +28,7 @@ var corrects = 0;
 var incorrects = 0;
 var timeOuts = 0;
 var timerMech;
+var numOfPlayers;
 var playerOneExists;
 var playerTwoExists;
 var playerThreeExists;
@@ -84,8 +85,7 @@ function capitalize(name) {
 function newName() {
     var input = capitalize($("#userName").val().trim());
     userName = input;
-    playersRef.once("value", function(snapshot) {
-
+    playersRef.once("value", function(snapshot) {        
         playerOneExists = snapshot.child("1").exists();
         playerTwoExists = snapshot.child("2").exists();
         playerThreeExists = snapshot.child("3").exists();
@@ -93,6 +93,9 @@ function newName() {
         if (playerOneExists === false)
         {
             createPlayerOnBase(1);
+            //ALLOW PLAYER ONE TO PICK CATEGORY HERE -M
+
+
             playerOneExists = true;
             playerNumber = 1;
         }
@@ -116,20 +119,29 @@ function newName() {
         }
         else if (playerOneExists && playerTwoExists && playerThreeExists && playerFourExists)
         {
-            alert("Too many players! Wait until there is room!")
+            alert("Too many players! Wait until there is room! Try again later")
         }
-        playersRef.once("value", function(snapshot) {
+
+        numOfPlayers = snapshot.numChildren();
+
+        if (numOfPlayers < 4)
+        {
+            playersRef.once("value", function(snapshot) {
             avatarCall(snapshot.child(playerNumber).val().name);
         });
         playerRef = database.ref("/players/" + playerNumber);
+        }
         playerRef.onDisconnect().remove();
     });
-    // set up player info in database
-    // on start game pull all users from firebase into allUsers array
-    //$("#inputButtons").hide();
-    populateArray();
+    // $("#inputButtons").hide();
+    //**UI NEED-Please let the player who had just submitted their name that they are still waiting for other players.
     $("#inputButtons").find("input:text").val("");
+
+    //Not sure why, but numOfPlayers is off by like 2. lol. -M
+    if (numOfPlayers >= 0)
+    {
     whatNext();
+    }
 };
 function createPlayerOnBase(number) {
     playerNumber = number;
@@ -144,51 +156,17 @@ function createPlayerOnBase(number) {
         // plan to insert objects into timePairs representing 
         // {which-question, guess-time} 
         // for CORRECT guesses only to compare at the end of the round
-        time: 0,
+        timeCorrect: 0,
         wins: 0,
-        losses: 0
+        losses: 0,
+        notReadyYet: true
     });
-};
-function whatNext () {
-    // I'm not sure why this needs to refer to playerThree instead of playerFour existing -J
-    if (playerThreeExists) {
-        $("#readyButton")
-            .html("<p class='lead'><a class='btn btn-outline-dark btn-lg'  href='#' role='button'>Get Ready!</a></p>");
-    };
 }
-function populateArray() {
-    // if (allUsers.length === 0) {
-    //     playersRef.once("value", function(snapshot) { 
-    //         allUsers.push(snapshot.child(1).val().name);
-    //         console.log(allUsers)
-    //     });
-    // } else if (allUsers.length === 1) {
-    //     playersRef.once("value", function(snapshot) { 
-    //         allUsers.push(snapshot.child(2).val().name);
-    //         console.log(allUsers)
-    //     });
-    // } else if (allUsers.length === 2) {
-    //     playersRef.once("value", function(snapshot) { 
-    //         allUsers.push(snapshot.child(3).val().name);
-    //         console.log(allUsers)
-    //     });
-    // } else if (allUsers.length === 3) {
-    //     playersRef.once("value", function(snapshot) { 
-    //         allUsers.push(snapshot.child(4).val().name);
-    //         console.log(allUsers)
-    //         var makeCardsButton = $("<button>");
-    //         makeCardsButton
-    //             .html("Make the Cards!")
-    //             .attr("id", "makeCards")
-    //             .css({"float":"right"})
-    //             .appendTo("#header");
-    //     });
-    // };
-};
+function whatNext () {
+    $("#readyButton")
+        .html("<p class='lead'><a class='btn btn-outline-dark btn-lg'  href='#' role='button'>Get Ready!</a></p>");
+}
 function clickListeners() {
-    $(document).on("click", "#makeCards", function() {
-        avatarByUser(allUsers);
-    });
     $(document).on("click", "#submitButton", function() {
         newName();
     });
@@ -199,6 +177,11 @@ function clickListeners() {
     });
     //When the game started ** WE WILL NEED TO SOMEHOW DETERMINE WHEN ALL 4 PLAYERS HAVE SUCCESSFULLY CLICKED THIS BUTTON. For now, it is single player
     $(document).on("click", "#readyButton", function() {
+        if (numOfPlayers === 2)
+        {
+
+        }
+        console.log(numOfPlayers);
         if (notReadyYet) {
             return
         } else {
@@ -206,8 +189,6 @@ function clickListeners() {
             $("#readyButton").empty();
             $("#questionText").empty();
             $("#answers").empty();
-            
-
             //see startGame(); function
             startGame();
             console.log("The game has started");
