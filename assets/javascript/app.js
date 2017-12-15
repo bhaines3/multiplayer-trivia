@@ -14,6 +14,8 @@ var database = firebase.database();
 var playersRef = database.ref("players");
 var playerRef;
 var playerNumber = 0;
+var questionsRef = database.ref("questions");
+var questionRef;
 var userName = "";
 var allUsers = [];
 var numberOfQuestions = 10;
@@ -70,7 +72,7 @@ var avatarByUser = function (array) {
     }
 };
 function isGameReady() {
-    if (allUsers.length === 4) {
+    if (allUsers.length >= 2) {
         notReadyYet = false;
     } else {
         return
@@ -105,20 +107,23 @@ function newName() {
         // {which-question, guess-time} 
         // for CORRECT guesses only to compare at the end of the round
         times: "no times yet",
+        wins: 0,
+        losses: 0
     });
     // on start game pull all users from firebase into allUsers array
-    // $("#inputButtons").hide();
+    //$("#inputButtons").hide();
     populateArray();
     $("#inputButtons").find("input:text").val("");
     whatNext();
 };
+
 function whatNext () {
     if (allUsers.length === 1) {
         $("#readyButton")
             .html("<p class='lead'><a class='btn btn-outline-dark btn-lg'  href='#' role='button'>Get Ready!</a></p>");
     };
     isGameReady();
-    playerRef.onDisconnect().remove();
+    //playerRef.onDisconnect().remove();
 }
 function populateArray() {
     if (allUsers.length === 0) {
@@ -214,8 +219,22 @@ function startGame()
         $("#questionsBox").show();
         $("#timer").show();
         startTimer();
+        placeQuestionsAnswersToFirebase();
         showQuestionsAnswers();
     });
+}
+function placeQuestionsAnswersToFirebase() {
+    questionsRef.set({
+        })
+    for (var i = 0; i < questionsArray.length; i++)
+    {
+        questionRef = database.ref("/questions/" + i)
+        questionRef.set({
+            question: questionsArray[i].question,
+            rightAnswer: questionsArray[i].correct_answer,
+            wrongAnswers: questionsArray[i].incorrect_answers
+        })
+    }
 }
 function startTimer()
 {
@@ -263,39 +282,43 @@ function showQuestionsAnswers()
 {
     hasChosenAnswer=false;
     //displays questions in questionsText
-    $("#questionText").html(questionsArray[qCount].question);
+    questionsRef.once("value", function(snapshot) { 
+            $("#questionText").html(snapshot.child(qCount).val().question);
+        });
 
     //randomizes placement of answers ***I COULD NOT FIND A WAY TO MAKE IT NEATER. IF YOU CAN, HELP?
     var randomCorrect = Math.floor(Math.random() * 4)+1;
-    $("#answer"+randomCorrect)
-        .attr("id", "correctAnswer")
-        .html(questionsArray[qCount].correct_answer);
-    if (randomCorrect === 1)
-    {
-        for (var i = 0; i < 3; i++)
+    questionsRef.once("value", function(snapshot) { 
+        $("#answer"+randomCorrect)
+            .attr("id", "correctAnswer")
+            .html(snapshot.child(qCount).val().rightAnswer);
+        if (randomCorrect === 1)
         {
-            $("#answer"+(i+2)).html(questionsArray[qCount].incorrect_answers[i]);
+            for (var i = 0; i < 3; i++)
+            {
+                $("#answer"+(i+2)).html(snapshot.child(qCount).val().wrongAnswers[i]);
+            }
         }
-    }
-    else if (randomCorrect === 2)
-    {
-        $("#answer1").html(questionsArray[qCount].incorrect_answers[0]);
-        $("#answer3").html(questionsArray[qCount].incorrect_answers[1]);
-        $("#answer4").html(questionsArray[qCount].incorrect_answers[2]);
-    }
-    else if (randomCorrect === 3)
-    {
-        $("#answer1").html(questionsArray[qCount].incorrect_answers[0]);
-        $("#answer2").html(questionsArray[qCount].incorrect_answers[1]);
-        $("#answer4").html(questionsArray[qCount].incorrect_answers[2]);
-    }
-    else if (randomCorrect === 4)
-    {
-        for (var i = 0; i < 3; i++)
+        else if (randomCorrect === 2)
         {
-            $("#answer"+(i+1)).html(questionsArray[qCount].incorrect_answers[i]);
+            $("#answer1").html(snapshot.child(qCount).val().wrongAnswers[0]);
+            $("#answer3").html(snapshot.child(qCount).val().wrongAnswers[1]);
+            $("#answer4").html(snapshot.child(qCount).val().wrongAnswers[2]);
         }
-    }
+        else if (randomCorrect === 3)
+        {
+            $("#answer1").html(snapshot.child(qCount).val().wrongAnswers[0]);
+            $("#answer2").html(snapshot.child(qCount).val().wrongAnswers[1]);
+            $("#answer4").html(snapshot.child(qCount).val().wrongAnswers[2]);
+        }
+        else if (randomCorrect === 4)
+        {
+            for (var i = 0; i < 3; i++)
+            {
+                $("#answer"+(i+1)).html(snapshot.child(qCount).val().wrongAnswers[i]);
+            }
+        }
+    });
 }
 //if user has ran out of time
 function timedOut() {
@@ -348,4 +371,7 @@ $(document).ready(function () {
     clickListeners();
     $("#questionsBox").hide();
     $("#timer").hide();
+    //playersRef.on("value", function(snapshot) {
+      //  console.log(snapshot.val());
+    //})
 });
