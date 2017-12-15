@@ -31,7 +31,7 @@ var timerMech;
 var playerOneExists;
 var playerTwoExists;
 var playerThreeExists;
-var PlayerFourExists;
+var playerFourExists;
 // var to see if we have 4 players before allowing the game to start
 var notReadyYet = true;
 //This variable measures when a user has clicked an answer. Error prevention for if user is able to press the correct/wrong answer multiple times
@@ -78,86 +78,83 @@ function avatarByUser(array) {
         avatarCall(`${array[i]}`);
     }
 };
-function isGameReady() {
-    if (allUsers.length >= 2) {
-        notReadyYet = false;
-    } else {
-        return
-    }
-};
 function capitalize(name) {
     return name.charAt(0).toUpperCase() + name.slice(1);
 }
 function newName() {
     var input = capitalize($("#userName").val().trim());
     userName = input;
-    
     playersRef.once("value", function(snapshot) {
 
         playerOneExists = snapshot.child("1").exists();
         playerTwoExists = snapshot.child("2").exists();
         playerThreeExists = snapshot.child("3").exists();
         playerFourExists = snapshot.child("4").exists();
-
         if (playerOneExists === false)
         {
             createPlayerOnBase(1);
             playerOneExists = true;
+            playerNumber = 1;
         }
         else if (playerTwoExists === false)
         {
             createPlayerOnBase(2);
             playerTwoExists = true;
+            playerNumber = 2;
         }
         else if (playerThreeExists === false)
         {
             createPlayerOnBase(3);
             playerThreeExists = true;
+            playerNumber = 3;
         }
         else if (playerFourExists === false)
         {
             createPlayerOnBase(4);
             playerFourExists = true;
+            playerNumber = 4;
         }
         else if (playerOneExists && playerTwoExists && playerThreeExists && playerFourExists)
         {
             alert("Too many players! Wait until there is room!")
         }
+        playersRef.once("value", function(snapshot) {
+            avatarCall(snapshot.child(playerNumber).val().name);
+        });
+        playerRef = database.ref("/players/" + playerNumber);
         playerRef.onDisconnect().remove();
-     });
+    });
     // set up player info in database
     // on start game pull all users from firebase into allUsers array
     //$("#inputButtons").hide();
     populateArray();
     $("#inputButtons").find("input:text").val("");
     whatNext();
-
-    function createPlayerOnBase(number) {
-            playerNumber = number;
-            playerRef = database.ref("/players/" + playerNumber);
-            playerRef.set({
-                // name     
-                name: userName,
-                // correct answers (per round?)
-                correct: 0,
-                // incorrect answers
-                incorrect: 0,
-                // plan to insert objects into timePairs representing 
-                // {which-question, guess-time} 
-                // for CORRECT guesses only to compare at the end of the round
-                times: "no times yet",
-                wins: 0,
-                losses: 0
-            });
-        }
 };
-
+function createPlayerOnBase(number) {
+    playerNumber = number;
+    playerRef = database.ref("/players/" + playerNumber);
+    playerRef.set({
+        // name     
+        name: userName,
+        // correct answers (per round?)
+        correct: 0,
+        // incorrect answers
+        incorrect: 0,
+        // plan to insert objects into timePairs representing 
+        // {which-question, guess-time} 
+        // for CORRECT guesses only to compare at the end of the round
+        time: 0,
+        wins: 0,
+        losses: 0
+    });
+};
 function whatNext () {
-    if (allUsers.length === 1) {
+    // I'm not sure why this needs to refer to playerThree instead of playerFour existing -J
+    if (playerThreeExists) {
         $("#readyButton")
             .html("<p class='lead'><a class='btn btn-outline-dark btn-lg'  href='#' role='button'>Get Ready!</a></p>");
     };
-    isGameReady();
 }
 function populateArray() {
     // if (allUsers.length === 0) {
