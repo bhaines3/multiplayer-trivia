@@ -13,9 +13,10 @@ firebase.initializeApp(config);
 var database = firebase.database();
 var playersRef = database.ref("players");
 var playerRef;
-var playerNumber = 0;
+var playerNumber;
 var questionsRef = database.ref("questions");
 var questionRef;
+var measurementsRef = database.ref("measurements");
 var userName = "";
 var allUsers = [];
 var numberOfQuestions = 10;
@@ -27,11 +28,17 @@ var corrects = 0;
 var incorrects = 0;
 var timeOuts = 0;
 var timerMech;
+var playerOneExists;
+var playerTwoExists;
+var playerThreeExists;
+var PlayerFourExists;
 // var to see if we have 4 players before allowing the game to start
 var notReadyYet = true;
 //This variable measures when a user has clicked an answer. Error prevention for if user is able to press the correct/wrong answer multiple times
 var hasChosenAnswer = false;
+
 // functions
+
 function avatarCall(username) {
     var thisWillBeADiv = $("<div/>");
     var thisWillBeACard = $("<div/>");
@@ -82,40 +89,67 @@ function capitalize(name) {
     return name.charAt(0).toUpperCase() + name.slice(1);
 }
 function newName() {
-
-    if (playerNumber < 4)
-    {
-        playerNumber++;
-
-    }
-    else if (playerNumber === 4)
-    {
-        alert("There are already enough players!");
-        return;
-    }
     var input = capitalize($("#userName").val().trim());
     userName = input;
-    playerRef = database.ref("/players/" + playerNumber);
+    
+    playersRef.once("value", function(snapshot) {
+
+        playerOneExists = snapshot.child("1").exists();
+        playerTwoExists = snapshot.child("2").exists();
+        playerThreeExists = snapshot.child("3").exists();
+        playerFourExists = snapshot.child("4").exists();
+
+        if (playerOneExists === false)
+        {
+            createPlayerOnBase(1);
+            playerOneExists = true;
+        }
+        else if (playerTwoExists === false)
+        {
+            createPlayerOnBase(2);
+            playerTwoExists = true;
+        }
+        else if (playerThreeExists === false)
+        {
+            createPlayerOnBase(3);
+            playerThreeExists = true;
+        }
+        else if (playerFourExists === false)
+        {
+            createPlayerOnBase(4);
+            playerFourExists = true;
+        }
+        else if (playerOneExists && playerTwoExists && playerThreeExists && playerFourExists)
+        {
+            alert("Too many players! Wait until there is room!")
+        }
+        playerRef.onDisconnect().remove();
+     });
     // set up player info in database
-    playerRef.set({
-        // name     
-        name: userName,
-        // correct answers (per round?)
-        correct: 0,
-        // incorrect answers
-        incorrect: 0,
-        // plan to insert objects into timePairs representing 
-        // {which-question, guess-time} 
-        // for CORRECT guesses only to compare at the end of the round
-        times: "no times yet",
-        wins: 0,
-        losses: 0
-    });
     // on start game pull all users from firebase into allUsers array
     //$("#inputButtons").hide();
     populateArray();
     $("#inputButtons").find("input:text").val("");
     whatNext();
+
+    function createPlayerOnBase(number) {
+            playerNumber = number;
+            playerRef = database.ref("/players/" + playerNumber);
+            playerRef.set({
+                // name     
+                name: userName,
+                // correct answers (per round?)
+                correct: 0,
+                // incorrect answers
+                incorrect: 0,
+                // plan to insert objects into timePairs representing 
+                // {which-question, guess-time} 
+                // for CORRECT guesses only to compare at the end of the round
+                times: "no times yet",
+                wins: 0,
+                losses: 0
+            });
+        }
 };
 
 function whatNext () {
@@ -124,31 +158,35 @@ function whatNext () {
             .html("<p class='lead'><a class='btn btn-outline-dark btn-lg'  href='#' role='button'>Get Ready!</a></p>");
     };
     isGameReady();
-    playerRef.onDisconnect().remove();
 }
 function populateArray() {
-    $("#player-cards").empty();
-    if (allUsers.length === 0) {
-        playersRef.once("value", function(snapshot) { 
-            allUsers.push(snapshot.child(1).val().name);
-            avatarByUser(allUsers);
-        });
-    } else if (allUsers.length === 1) {
-        playersRef.once("value", function(snapshot) { 
-            allUsers.push(snapshot.child(2).val().name);
-            avatarByUser(allUsers);
-        });
-    } else if (allUsers.length === 2) {
-        playersRef.once("value", function(snapshot) { 
-            allUsers.push(snapshot.child(3).val().name);
-            avatarByUser(allUsers);
-        });
-    } else if (allUsers.length === 3) {
-        playersRef.once("value", function(snapshot) { 
-            allUsers.push(snapshot.child(4).val().name);
-            avatarByUser(allUsers);
-        });
-    };
+    // if (allUsers.length === 0) {
+    //     playersRef.once("value", function(snapshot) { 
+    //         allUsers.push(snapshot.child(1).val().name);
+    //         console.log(allUsers)
+    //     });
+    // } else if (allUsers.length === 1) {
+    //     playersRef.once("value", function(snapshot) { 
+    //         allUsers.push(snapshot.child(2).val().name);
+    //         console.log(allUsers)
+    //     });
+    // } else if (allUsers.length === 2) {
+    //     playersRef.once("value", function(snapshot) { 
+    //         allUsers.push(snapshot.child(3).val().name);
+    //         console.log(allUsers)
+    //     });
+    // } else if (allUsers.length === 3) {
+    //     playersRef.once("value", function(snapshot) { 
+    //         allUsers.push(snapshot.child(4).val().name);
+    //         console.log(allUsers)
+    //         var makeCardsButton = $("<button>");
+    //         makeCardsButton
+    //             .html("Make the Cards!")
+    //             .attr("id", "makeCards")
+    //             .css({"float":"right"})
+    //             .appendTo("#header");
+    //     });
+    // };
 };
 function clickListeners() {
     $(document).on("click", "#makeCards", function() {
