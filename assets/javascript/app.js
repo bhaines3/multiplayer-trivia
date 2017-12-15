@@ -59,7 +59,7 @@ function avatarCall(username) {
         .appendTo(thisWillBeACard);
     thisWillBeACard
         .addClass("card rounded")
-        .css({"width":"15rem"})
+        .css({"width":"13rem"})
         .appendTo(thisWillBeADiv);
     thisWillBeADiv
         .attr("class", "col-3")
@@ -111,10 +111,10 @@ function newName() {
         losses: 0
     });
     // on start game pull all users from firebase into allUsers array
-    // $("#inputButtons").hide();
+    //$("#inputButtons").hide();
     populateArray();
     $("#inputButtons").find("input:text").val("");
-    whatNext();
+    //whatNext();
 };
 
 function whatNext () {
@@ -123,7 +123,7 @@ function whatNext () {
             .html("<p class='lead'><a class='btn btn-outline-dark btn-lg'  href='#' role='button'>Get Ready!</a></p>");
     };
     isGameReady();
-    playerRef.onDisconnect().remove();
+    //playerRef.onDisconnect().remove();
 }
 function populateArray() {
     if (allUsers.length === 0) {
@@ -367,4 +367,7 @@ function wrongChoice() {
 }
 $(document).ready(function () {
     clickListeners();
+    //playersRef.on("value", function(snapshot) {
+      //  console.log(snapshot.val());
+    //})
 });
