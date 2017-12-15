@@ -50,14 +50,15 @@ function avatarCall(username) {
     somebodysName
         .html(username)
         .appendTo(smallerDiv);
-    score 
-        .html("score goes here")
+    score
+        .addClass("score")
+        .html("Score:  ")
         .appendTo(smallerDiv);
     smallerDiv
         .addClass("card-body")
         .appendTo(thisWillBeACard);
     thisWillBeACard
-        .addClass("card")
+        .addClass("card rounded")
         .css({"width":"15rem"})
         .appendTo(thisWillBeADiv);
     thisWillBeADiv
