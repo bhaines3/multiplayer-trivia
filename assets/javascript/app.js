@@ -268,10 +268,13 @@ function clickListeners() {
     //Whena  new name has been submitted
     $(document).on("click", "#submitButton", function() {
         newName();
+        $("#inputName").modal("hide");
+        
     });
     $(document).keypress(function(e) {
         if (e.which == 13) {
             newName();
+            $("#inputName").modal("hide");
         }
     });
     //When the game started ** WE WILL NEED TO SOMEHOW DETERMINE WHEN ALL 4 PLAYERS HAVE SUCCESSFULLY CLICKED THIS BUTTON. For now, it is single player

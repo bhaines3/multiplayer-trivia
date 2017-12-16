@@ -34,7 +34,35 @@
                                 <div id="readyButton">                 
                                 </div>
                         </div>
+                        <!-- Button trigger modal -->
                         <div class="container">
+                                <button type="button" class="btn btn-outline-dark" data-toggle="modal" data-target="#inputName">
+                                        Enter Username
+                                </button>
+                                
+                                <!-- Modal -->
+                                <div class="modal fade" id="inputName" tabindex="-1" role="dialog" aria-labelledby="inputNameLabel" aria-hidden="true">
+                                        <div class="modal-dialog" role="document">
+                                                <div class="modal-content">
+                                                        <div class="modal-header">
+                                                                <h5 class="modal-title" id="modalTitle">Name</h5>
+                                                                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                                                <span aria-hidden="true">&times;</span>
+                                                                </button>
+                                                        </div>
+                                                        <div class="modal-body">
+                                                                <input type="text" class="form-control mb-2 mb-sm-0" id="userName" placeholder="Enter Name">
+                                                        </div>
+                                                        <div class="modal-footer">
+                                                                <button type="button" class="btn btn-outline-dark" data-dismiss="modal">Close</button>
+                                                                <!-- <button type="submit" id="submitButton" class="btn btn-outline-dark">Submit</button> -->
+                                                                <button type="submit" id="submitButton" class="btn btn-outline-dark" data-dismiss="modal"> Submit</button>
+                                                        </div>
+                                                </div>
+                                        </div>
+                                </div>
+                        </div>
+                        <!-- <div class="container">
                                 <div class="wrapper">
                                         <div class="form-row align-items-center">
                                                 <div class="col-sm-3 form-group" id="inputButtons">
@@ -44,7 +72,7 @@
                                                 </div>
                                         </div>
                                 </div>
-                        </div>
+                        </div> -->
                 </div>
         <!-- Timer Box -->
                 <div class="row">
