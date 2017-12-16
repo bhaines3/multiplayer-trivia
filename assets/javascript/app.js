@@ -16,7 +16,6 @@ var playerRef;
 var playerNumber;
 var questionsRef = database.ref("questions");
 var questionRef;
-var measurementsRef = database.ref("measurements");
 var userName = "";
 var allUsers = [];
 var numberOfQuestions = 10;
@@ -29,119 +28,209 @@ var incorrects = 0;
 var timeOuts = 0;
 var timerMech;
 var numOfPlayers;
-var playerOneExists;
-var playerTwoExists;
-var playerThreeExists;
-var playerFourExists;
+var playerOneCardExists = null;
+var playerTwoCardExists = null;
+var playerThreeCardExists = null;
+var playerFourCardExists = null;
+var playerOneExists = null;
+var playerTwoExists = null;
+var playerThreeExists = null;
+var playerFourExists = null;
+var playerOneNotReady;
+var playerTwoNotReady;
+var playerThreeNotReady;
+var playerFourNotReady;
 // var to see if we have 4 players before allowing the game to start
 var notReadyYet = true;
 //This variable measures when a user has clicked an answer. Error prevention for if user is able to press the correct/wrong answer multiple times
 var hasChosenAnswer = false;
 
-// functions
 
-function avatarCall(username) {
-    var thisWillBeADiv = $("<div/>");
-    var thisWillBeACard = $("<div/>");
-    var imgPlace = $("<div/>");
-    var avatar = $("<img/>");
-    var smallerDiv = $("<div/>");
-    var somebodysName = $("<h4/>");
-    var score = $("<p/>");
-    imgPlace
-        .addClass("row justify-content-center")
-        .appendTo(thisWillBeACard);
-    avatar
-        .addClass("card-img-top avatar-image")
-        .attr("src", `https://api.adorable.io/avatars/131/${username}.png`)
-        .attr("alt", username)
-        .appendTo(imgPlace);
-    somebodysName
-        .html(username)
-        .appendTo(smallerDiv);
-    score
-        .addClass("score")
-        .html("Score:  ")
-        .appendTo(smallerDiv);
-    smallerDiv
-        .addClass("card-body")
-        .appendTo(thisWillBeACard);
-    thisWillBeACard
-        .addClass("card")
-        .appendTo(thisWillBeADiv);
-    thisWillBeADiv
-        .attr("class", "col-3")
-        .appendTo($("#player-cards"));
-};
-function avatarByUser(array) {
-    for (var i = 0; i < array.length; i++) {
-        avatarCall(`${array[i]}`);
+
+//Initialize everything. Checking firebase to see what already exists so that when players come on, they see how many players have already signed in.
+playersRef.on("value", function(snapshot){
+    //Checking and storing to see what players already exist
+    playerOneExists = snapshot.child("0").exists();
+    playerTwoExists = snapshot.child("1").exists();
+    playerThreeExists = snapshot.child("2").exists();
+    playerFourExists = snapshot.child("3").exists();
+    //If a player already exists, display the card for this player. If not, don't do it.
+    if (playerOneExists === true)
+        {
+            avatarCall(snapshot.child(0).val().name,0);
+            playerOneCardExists = true;
+        }
+    if (playerTwoExists === true)
+        {
+            avatarCall(snapshot.child(1).val().name,1);
+            playerTwoCardExists = true;
+        }
+    if (playerThreeExists === true)
+        {
+            avatarCall(snapshot.child(2).val().name,2);
+            playerThreeCardExists = true;
+        }
+    if (playerFourExists === true)
+        {
+            avatarCall(snapshot.child(3).val().name,3);
+            playerFourCardExists = true;
+        }
+});
+
+// functions
+function avatarCall(username, playerNumber) {
+    function makeCard(username)
+    {
+        var thisWillBeADiv = $("<div/>");
+        var thisWillBeACard = $("<div/>");
+        var imgPlace = $("<div/>");
+        var avatar = $("<img/>");
+        var smallerDiv = $("<div/>");
+        var somebodysName = $("<h4/>");
+        var score = $("<p/>");
+        imgPlace
+            .addClass("row justify-content-center")
+            .appendTo(thisWillBeACard);
+        avatar
+            .addClass("card-img-top avatar-image")
+            .attr("src", `https://api.adorable.io/avatars/131/${username}.png`)
+            .attr("alt", username)
+            .appendTo(imgPlace);
+        somebodysName
+            .html(username)
+            .appendTo(smallerDiv);
+        score
+            .addClass("score")
+            .html("Score:  ")
+            .appendTo(smallerDiv);
+        smallerDiv
+            .addClass("card-body")
+            .appendTo(thisWillBeACard);
+        thisWillBeACard
+            .addClass("card rounded")
+            .css({"width":"13rem"})
+            .appendTo(thisWillBeADiv);
+        thisWillBeADiv
+            .attr("class", "col-3")
+            .appendTo($("#player-cards"));
+    }
+    if(playerNumber === 0)
+    {
+        if (playerOneCardExists === true)
+        {
+            return
+        }
+        else
+        {
+            makeCard(username);
+        }
+    }
+    if(playerNumber === 1)
+    {
+        if (playerTwoCardExists === true)
+        {
+            return
+        }
+        else
+        {
+            makeCard(username);
+        }
+    }
+    if(playerNumber === 2)
+    {
+        if (playerThreeCardExists === true)
+        {
+            return
+        }
+        else
+        {
+            makeCard(username);
+        }
+    }
+    if(playerNumber === 3)
+    {
+        if (playerFourCardExists === true)
+        {
+            return
+        }
+        else
+        {
+            makeCard(username);
+        }
     }
 };
+
+//function that capitalizes the first letter of the name typed into the game.
 function capitalize(name) {
     return name.charAt(0).toUpperCase() + name.slice(1);
 }
+
+//function to place the new player on base. This function checks to see if players currently exist, and if not place this new player in that spot.
 function newName() {
     var input = capitalize($("#userName").val().trim());
     userName = input;
     playersRef.once("value", function(snapshot) {        
-        playerOneExists = snapshot.child("1").exists();
-        playerTwoExists = snapshot.child("2").exists();
-        playerThreeExists = snapshot.child("3").exists();
-        playerFourExists = snapshot.child("4").exists();
+        playerOneExists = snapshot.child("0").exists();
+        playerTwoExists = snapshot.child("1").exists();
+        playerThreeExists = snapshot.child("2").exists();
+        playerFourExists = snapshot.child("3").exists();
         if (playerOneExists === false)
         {
-            createPlayerOnBase(1);
+            createPlayerOnBase(0);
+            //If this player is player one, allow it to see player 1 options here.
             //ALLOW PLAYER ONE TO PICK CATEGORY HERE -M
-
-
             playerOneExists = true;
-            playerNumber = 1;
+            playerNumber = 0;
         }
         else if (playerTwoExists === false)
         {
-            createPlayerOnBase(2);
+            createPlayerOnBase(1);
             playerTwoExists = true;
-            playerNumber = 2;
+            playerNumber = 1;
         }
         else if (playerThreeExists === false)
         {
-            createPlayerOnBase(3);
+            createPlayerOnBase(2);
             playerThreeExists = true;
-            playerNumber = 3;
+            playerNumber = 2;
         }
         else if (playerFourExists === false)
         {
-            createPlayerOnBase(4);
+            createPlayerOnBase(3);
             playerFourExists = true;
-            playerNumber = 4;
+            playerNumber = 3;
         }
         else if (playerOneExists && playerTwoExists && playerThreeExists && playerFourExists)
         {
             alert("Too many players! Wait until there is room! Try again later")
         }
-
+        //Counts the number of players
         numOfPlayers = snapshot.numChildren();
 
+        //if there are still room for more players, continue adding the players. If not, don't add anymore.
         if (numOfPlayers < 4)
         {
             playersRef.once("value", function(snapshot) {
-            avatarCall(snapshot.child(playerNumber).val().name);
-        });
-        playerRef = database.ref("/players/" + playerNumber);
+                avatarCall(snapshot.child(playerNumber).val().name, playerNumber);
+            });
+            playerRef = database.ref("/players/" + playerNumber);
         }
+        //If a player disconnects, remove them from firebase ***STILL NEED TO SOMEHOW REMOVE CARD.
         playerRef.onDisconnect().remove();
     });
     // $("#inputButtons").hide();
     //**UI NEED-Please let the player who had just submitted their name that they are still waiting for other players.
     $("#inputButtons").find("input:text").val("");
 
+    //If there are at least 2 players, show the "Get Ready" sign ***I NEED TO MAKE SURE THAT FIREBASE STORES WHEN EACH USER HAS CLICKED "GET READY" -M
     //Not sure why, but numOfPlayers is off by like 2. lol. -M
     if (numOfPlayers >= 0)
     {
     whatNext();
     }
 };
+
+//This function creates the player object on firebase.
 function createPlayerOnBase(number) {
     playerNumber = number;
     playerRef = database.ref("/players/" + playerNumber);
@@ -158,14 +247,19 @@ function createPlayerOnBase(number) {
         timeCorrect: 0,
         wins: 0,
         losses: 0,
-        notReadyYet: true
+        notReadyYetBase: true
     });
 }
+//This function allows players to see the ready button. **MICHELLE, ADD THE MULTIPLAYER COMPONENT***
 function whatNext () {
     $("#readyButton")
         .html("<p class='lead'><a class='btn btn-outline-dark btn-lg'  href='#' role='button'>Get Ready!</a></p>");
 }
+
+
 function clickListeners() {
+
+    //When a new name has been submitted
     $(document).on("click", "#submitButton", function() {
         newName();
     });
@@ -176,10 +270,20 @@ function clickListeners() {
     });
     //When the game started ** WE WILL NEED TO SOMEHOW DETERMINE WHEN ALL 4 PLAYERS HAVE SUCCESSFULLY CLICKED THIS BUTTON. For now, it is single player
     $(document).on("click", "#readyButton", function() {
+        //If there are two players present (for some reason numOfPlayers is off by 1)
+        playersRef.once("value").then(function(snapshot) {
+                playerOneNotReady = snapshot.child("0").val();
+            });
         if (numOfPlayers === 2)
         {
+            //Check if player 1 and player 2 are ready.
+            // var newPostKey = firebase.database().ref().child("1").push().key;
+            // if ()
+            // {
 
+            // }
         }
+        console.log(playerOneNotReady);
         console.log(numOfPlayers);
         if (notReadyYet) {
             return
