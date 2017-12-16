@@ -34,7 +34,35 @@
                                 <div id="readyButton">                 
                                 </div>
                         </div>
+                        <!-- Button trigger modal -->
                         <div class="container">
+                                <button type="button" class="btn btn-outline-dark" data-toggle="modal" data-target="#inputName">
+                                        Enter Username
+                                </button>
+                                
+                                <!-- Modal -->
+                                <div class="modal fade" id="inputName" tabindex="-1" role="dialog" aria-labelledby="inputNameLabel" aria-hidden="true">
+                                        <div class="modal-dialog" role="document">
+                                                <div class="modal-content">
+                                                        <div class="modal-header">
+                                                                <h5 class="modal-title" id="modalTitle">Name</h5>
+                                                                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                                                <span aria-hidden="true">&times;</span>
+                                                                </button>
+                                                        </div>
+                                                        <div class="modal-body">
+                                                                <input type="text" class="form-control mb-2 mb-sm-0" id="userName" placeholder="Enter Name">
+                                                        </div>
+                                                        <div class="modal-footer">
+                                                                <button type="button" class="btn btn-outline-dark" data-dismiss="modal">Close</button>
+                                                                <!-- <button type="submit" id="submitButton" class="btn btn-outline-dark">Submit</button> -->
+                                                                <button type="submit" id="submitButton" class="btn btn-outline-dark" data-dismiss="modal"> Submit</button>
+                                                        </div>
+                                                </div>
+                                        </div>
+                                </div>
+                        </div>
+                        <!-- <div class="container">
                                 <div class="wrapper">
                                         <div class="form-row align-items-center">
                                                 <div class="col-sm-3 form-group" id="inputButtons">
@@ -44,7 +72,7 @@
                                                 </div>
                                         </div>
                                 </div>
-                        </div>
+                        </div> -->
                 </div>
         <!-- Timer Box -->
                 <div class="row">
@@ -67,26 +95,19 @@
                 </div>
         <!-- Player Cards -->
                 <div class="row justify-content-center" id="player-cards"></div>       
-                <!-- <footer class="footer">
-                        <div class="container">
-                                <span class="copyright">© Copyright 2017 Brandon Haines, Jason Leo, Michelle Le, and Andrew Kippur</span>
-                        </div>
-                </footer>   -->
                 <footer class="footer">
-                        <!-- <div class="thoughtBubbleButton">
-                        
-                        </div> -->
-                            <div class="wrapper text-center" id="footerBubble">
-                                        <button class="btn btn-outline-dark" type="button" data-toggle="collapse" data-target="#thoughtBubble" aria-expanded="false" aria-controls="thoughtBubble">
-                                                        💁
-                                                        </button>
+
+                        <div class="wrapper text-center" id="footerBubble">
                                 <div class="collapse" id="thoughtBubble">
-                                    <div class="card card-body">
+                                <div class="card card-body">
                                         © Copyright 2017 Jason Leo, Michelle Le, Andrew Kippur, and Brandon Haines
-                                    </div>
                                 </div>
-                            </div>
-                           
+
+                                </div>
+                        </div>
+                        <button class="btn btn-outline-dark" type="button" data-toggle="collapse" data-target="#thoughtBubble" aria-expanded="false" aria-controls="thoughtBubble">
+                        💁
+                        </button>
                 </footer>
         </body>
 </html>
