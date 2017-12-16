@@ -46,7 +46,7 @@ var playerTwoNotReady;
 var playerThreeNotReady;
 var playerFourNotReady;
 // var to see if we have 4 players before allowing the game to start
-var notReadyYet = true;
+var notReadyYet = false;
 //This variable measures when a user has clicked an answer. Error prevention for if user is able to press the correct/wrong answer multiple times
 var hasChosenAnswer = false;
 
@@ -224,7 +224,6 @@ function newName() {
         }
         //If a player disconnects, remove them from firebse.  ***STILL NEED TO SOMEHOW REMOVE CARD.
          playerRef.onDisconnect().remove(); 
-        playerRef.onDisconnect().remove();
     });
     // $("#inputButtons").hide();
     //**UI NEED-Please let the player who had just submitted their name that they are still waiting for other players.
@@ -278,18 +277,18 @@ function clickListeners() {
     //When the game started ** WE WILL NEED TO SOMEHOW DETERMINE WHEN ALL 4 PLAYERS HAVE SUCCESSFULLY CLICKED THIS BUTTON. For now, it is single player
     $(document).on("click", "#readyButton", function() {
         //If there are two players present (for some reason numOfPlayers is off by 1)
-        playersRef.once("value").then(function(snapshot) {
-                playerOneNotReady = snapshot.child("0").val();
-            });
-         if (numOfPlayers === 2)
-         {
-            //Check if player 1 and player 2 are ready.
-            // var newPostKey = firebase.database().ref().child("1").push().key;
-            // if ()
-            // {
+        // playersRef.once("value").then(function(snapshot) {
+        //         playerOneNotReady = snapshot.child("0").val();
+        //     });
+        //  if (numOfPlayers === 2)
+        //  {
+        //     //Check if player 1 and player 2 are ready.
+        //     // var newPostKey = firebase.database().ref().child("1").push().key;
+        //     // if ()
+        //     // {
  
-            // }
-         }
+        //     // }
+        //  }
         console.log(playerOneNotReady);
         console.log(numOfPlayers);
          if (notReadyYet) {
