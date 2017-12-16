@@ -16,11 +16,7 @@ var playerRef;
 var playerNumber;
 var questionsRef = database.ref("questions");
 var questionRef;
-var measurementsRef = database.ref("measurements");
 var userName = "";
-var allUsers = [];
-var numberOfQuestions = 10;
-var categoryNum = 9;
 var questionsArray = [];
 var timer = 10;
 var qCount = 0;
@@ -29,10 +25,7 @@ var incorrects = 0;
 var timeOuts = 0;
 var timerMech;
 var numOfPlayers;
-var playerOneExists;
-var playerTwoExists;
-var playerThreeExists;
-var playerFourExists;
+var isApiGrabbed = false;
 var playerOneCardExists = null;
 var playerTwoCardExists = null;
 var playerThreeCardExists = null;
@@ -45,8 +38,6 @@ var playerOneNotReady;
 var playerTwoNotReady;
 var playerThreeNotReady;
 var playerFourNotReady;
-// var to see if we have 4 players before allowing the game to start
-var notReadyYet = false;
 //This variable measures when a user has clicked an answer. Error prevention for if user is able to press the correct/wrong answer multiple times
 var hasChosenAnswer = false;
 
@@ -169,7 +160,6 @@ function avatarCall(username, playerNumber) {
 function capitalize(name) {
     return name.charAt(0).toUpperCase() + name.slice(1);
 }
-
 //function to place the new player on base. This function checks to see if players currently exist, and if not place this new player in that spot.
 function newName() {
     var input = capitalize($("#userName").val().trim());
@@ -182,9 +172,6 @@ function newName() {
         if (playerOneExists === false)
         {
             createPlayerOnBase(0);
-            //ALLOW PLAYER ONE TO PICK CATEGORY HERE -M
-            //If this player is player one, allow it to see player 1 options here.
-
             playerOneExists = true;
             playerNumber = 0;
         }
@@ -235,7 +222,6 @@ function newName() {
     whatNext();
     }
 };
-
 //This function creates the player object on firebase
 function createPlayerOnBase(number) {
     playerNumber = number;
@@ -247,23 +233,28 @@ function createPlayerOnBase(number) {
         correct: 0,
         // incorrect answers
         incorrect: 0,
-        // plan to insert objects into timePairs representing 
-        // {which-question, guess-time} 
-        // for CORRECT guesses only to compare at the end of the round
         timeCorrect: 0,
         wins: 0,
         losses: 0,
-        notReadyYetBase: true
     });
-}
-
+};
 //This function allows players to see the ready button. **MICHELLE, ADD THE MULTIPLAYER COMPONENT***
 function whatNext () {
     $("#readyButton")
         .html("<p class='lead'><a class='btn btn-outline-dark btn-lg'  href='#' role='button'>Get Ready!</a></p>");
-}
-
-
+};
+function initGame () {
+    if (playerNumber === 0) {
+        grabApi();
+    }
+};
+function checkStatus() {
+    if (isApiGrabbed && playerFourExists) {
+        alert("game starting!");
+        startGame();
+        //Prepping the layout to start the game and display our questions
+    }
+};
 function clickListeners() {
     //Whena  new name has been submitted
     $(document).on("click", "#submitButton", function() {
@@ -276,35 +267,14 @@ function clickListeners() {
     });
     //When the game started ** WE WILL NEED TO SOMEHOW DETERMINE WHEN ALL 4 PLAYERS HAVE SUCCESSFULLY CLICKED THIS BUTTON. For now, it is single player
     $(document).on("click", "#readyButton", function() {
-        //If there are two players present (for some reason numOfPlayers is off by 1)
-        // playersRef.once("value").then(function(snapshot) {
-        //         playerOneNotReady = snapshot.child("0").val();
-        //     });
-        //  if (numOfPlayers === 2)
-        //  {
-        //     //Check if player 1 and player 2 are ready.
-        //     // var newPostKey = firebase.database().ref().child("1").push().key;
-        //     // if ()
-        //     // {
- 
-        //     // }
-        //  }
         console.log(playerOneNotReady);
         console.log(numOfPlayers);
-         if (notReadyYet) {
-             return
-         }
-        // else {
-        //     //Prepping the layout to start the game and display our questions
-        $("#readyButton").empty();
         $("#questionText").empty();
         $("#answers").empty();
-        //see startGame(); function
-        startGame();
+        $("#readyButton").empty();
+        initGame();
         console.log("The game has started");
     });
-
-
     $(document).on("click", ".answer", function(event) {
         if (hasChosenAnswer === false)
         {
@@ -326,9 +296,8 @@ function clickListeners() {
 //Michelle's code SORRY JASON IGNORE ME
 //Sets up how the page first looks before start of game **STILL NEED TO MAKE PRETTY.
 $("#countDown").text("Time left: "+timer);
-function startGame()
-{
-    var queryURL = `https://opentdb.com/api.php?amount=${numberOfQuestions}&category=${categoryNum}&difficulty=easy&type=multiple`;
+function grabApi() {
+    var queryURL = `https://opentdb.com/api.php?amount=10&difficulty=easy&type=multiple`;
     $.ajax({
         type: "GET",
         url: queryURL
@@ -336,15 +305,19 @@ function startGame()
         console.log(response);
         //collects the items we want from the API and stores it into an existing array.
         questionsArray = response.results;
-
-        //starts the timer, sets up HTML for the questions, then displays questions/answers. See each function for more information
-        setUpHTML();
-        $("#questionsBox").show();
-        $("#timer").show();
-        startTimer();
         placeQuestionsAnswersToFirebase();
-        showQuestionsAnswers();
+        isApiGrabbed = true;
+        checkStatus();
     });
+}
+function startGame()
+{
+    //starts the timer, sets up HTML for the questions, then displays questions/answers. See each function for more information
+    setUpHTML();
+    $("#questionsBox").show();
+    $("#timer").show();
+    showQuestionsAnswers();
+    startTimer();
 };
 function placeQuestionsAnswersToFirebase() {
     questionsRef.set({
