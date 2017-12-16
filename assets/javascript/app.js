@@ -78,11 +78,6 @@ playersRef.on("value", function(snapshot){
 });
 
 // functions
-
-//Jason, I added playerNumber to help with the added conditional statements added below. I also put the makeCard function within this function.
-//The added conditionals makes sure that the card has NOT aready been made. I ran into an issue when trying to populate cards of objects
-// that already existed in firebase and when I submitted a new player, it DOUBLED the card for the user. This function PROHIBITS that. Please
-//try not to change it as much as possible.
 function avatarCall(username, playerNumber) {
     function makeCard(username)
     {
