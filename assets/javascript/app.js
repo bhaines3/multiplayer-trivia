@@ -25,7 +25,8 @@ var incorrects = 0;
 var timeOuts = 0;
 var timerMech;
 var numOfPlayers;
-var isApiGrabbed = false;
+var isApi;
+var isApiGrabbed = database.ref("isApiGrabbed");
 var playerOneCardExists = null;
 var playerTwoCardExists = null;
 var playerThreeCardExists = null;
@@ -40,7 +41,7 @@ var playerThreeNotReady;
 var playerFourNotReady;
 //This variable measures when a user has clicked an answer. Error prevention for if user is able to press the correct/wrong answer multiple times
 var hasChosenAnswer = false;
-
+isApiGrabbed.set(false);
 //Initialize everything. Checking firebase to see what already exists so that when players come on, they see how many players have already signed in.
 playersRef.on("value", function(snapshot){
     //Checking and storing to see what players already exist
@@ -249,8 +250,16 @@ function initGame () {
     }
 };
 function checkStatus() {
-    if (isApiGrabbed && playerFourExists) {
+    isApiGrabbed.once("value", function(snapshot){
+        console.log(snapshot.val());
+        isApi = snapshot.val();
+        console.log(isApi);
+    })
+    if (isApi && playerFourExists) {
         alert("game starting!");
+        $("#questionText").empty();
+        $("#answers").empty();
+        $("#readyButton").empty();
         startGame();
         //Prepping the layout to start the game and display our questions
     }
@@ -269,10 +278,8 @@ function clickListeners() {
     $(document).on("click", "#readyButton", function() {
         console.log(playerOneNotReady);
         console.log(numOfPlayers);
-        $("#questionText").empty();
-        $("#answers").empty();
-        $("#readyButton").empty();
         initGame();
+        setTimeout(checkStatus, 2500);
         console.log("The game has started");
     });
     $(document).on("click", ".answer", function(event) {
@@ -306,8 +313,7 @@ function grabApi() {
         //collects the items we want from the API and stores it into an existing array.
         questionsArray = response.results;
         placeQuestionsAnswersToFirebase();
-        isApiGrabbed = true;
-        checkStatus();
+        isApiGrabbed.set(true);
     });
 }
 function startGame()
