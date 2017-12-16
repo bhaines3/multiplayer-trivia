@@ -27,6 +27,7 @@ var timerMech;
 var numOfPlayers;
 var isApi;
 var isApiGrabbed = database.ref("isApiGrabbed");
+var apiQuestionCount = database.ref("currQuestionNumber");
 var playerOneCardExists = null;
 var playerTwoCardExists = null;
 var playerThreeCardExists = null;
@@ -42,7 +43,21 @@ var playerFourNotReady;
 //This variable measures when a user has clicked an answer. Error prevention for if user is able to press the correct/wrong answer multiple times
 var hasChosenAnswer = false;
 isApiGrabbed.set(false);
+
+apiQuestionCount.once("value",function(snapshot){
+    if (playerNumber === 0)
+    {
+    snapshot.set(qCount);
+    }
+});
 //Initialize everything. Checking firebase to see what already exists so that when players come on, they see how many players have already signed in.
+isApiGrabbed.on("value",function(snapshot){
+    if ((snapshot.val() === true) && playerNumber !== 0)
+    {
+        placeQuestionsAnswersToFirebase();
+        setTimeout(checkStatus, 2500);
+    }
+});
 playersRef.on("value", function(snapshot){
     //Checking and storing to see what players already exist
     playerOneExists = snapshot.child("0").exists();
@@ -157,10 +172,6 @@ function avatarCall(username, playerNumber) {
      }
  };
 
-//function that capitalizes the first letter of the name typed into the game.
-function capitalize(name) {
-    return name.charAt(0).toUpperCase() + name.slice(1);
-}
 //function to place the new player on base. This function checks to see if players currently exist, and if not place this new player in that spot.
 function newName() {
     var input = capitalize($("#userName").val().trim());
@@ -222,6 +233,10 @@ function newName() {
     {
     whatNext();
     }
+    //function that capitalizes the first letter of the name typed into the game.
+    function capitalize(name) {
+        return name.charAt(0).toUpperCase() + name.slice(1);
+    }
 };
 //This function creates the player object on firebase
 function createPlayerOnBase(number) {
@@ -246,6 +261,7 @@ function whatNext () {
 };
 function initGame () {
     if (playerNumber === 0) {
+        apiQuestionCount.set(qCount);
         grabApi();
     }
 };
@@ -329,17 +345,25 @@ function startGame()
     startTimer();
 };
 function placeQuestionsAnswersToFirebase() {
-    questionsRef.set({
-        })
-    for (var i = 0; i < questionsArray.length; i++)
+    if (playerNumber === 0)
     {
-        questionRef = database.ref("/questions/" + i)
-        questionRef.set({
-            question: questionsArray[i].question,
-            rightAnswer: questionsArray[i].correct_answer,
-            wrongAnswers: questionsArray[i].incorrect_answers
-        })
+        for (var i = 0; i < questionsArray.length; i++)
+        {
+            questionRef = database.ref("/questions/" + i)
+            questionRef.set({
+                question: questionsArray[i].question,
+                rightAnswer: questionsArray[i].correct_answer,
+                wrongAnswers: questionsArray[i].incorrect_answers
+            })
+        }   
     }
+    else
+    {
+        questionsRef.once("value", function(snapshot){
+            questionsArray = snapshot.val();
+        });
+    }
+    
 };
 function startTimer()
 {
@@ -440,20 +464,26 @@ function timedOut() {
 //increases qCount to move to the next question
 function moveOn()
 {
-    //if there are still questions left, setUpHTML and run tmer again.
-    if (qCount < questionsArray.length-1)
-    {
-        qCount++;
-        setUpHTML();
-        timer = 10;
-        startTimer();
-        showQuestionsAnswers();
-    }
-    else
-    {
-        alert("the game ends here")
-        //final screen
-    }
+    apiQuestionCount.once("value", function(snapshot){
+        //if there are still questions left, setUpHTML and run tmer again.
+        if (qCount < questionsArray.length-1)
+        {
+            qCount++;
+            if (playerNumber === 0)
+            {
+                apiQuestionCount.set(qCount);
+            }
+            setUpHTML();
+            timer = 10;
+            startTimer();
+            showQuestionsAnswers();
+        }
+        else
+        {
+            alert("the game ends here")
+            //final screen
+        }
+    });
 };
 //HERE AND BELOW, STILL WORKING ON CLICK EVENTS WHEN USER CHOOSES CORRECT/WRONG ANSWER
 function rightChoice() {
