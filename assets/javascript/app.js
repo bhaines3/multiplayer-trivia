@@ -86,10 +86,7 @@ playersRef.on("value", function(snapshot){
             playerFourCardExists = true;
         }
 });
-
-
 // functions
-
 function avatarCall(username, playerNumber) {
     function makeCard(username)
     {
@@ -112,6 +109,7 @@ function avatarCall(username, playerNumber) {
             .html(username)
             .appendTo(smallerDiv);
         score
+            .attr("id", `player-${playerNumber}`)
             .addClass("score")
             .html("Score:  ")
             .appendTo(smallerDiv);
@@ -183,25 +181,21 @@ function newName() {
         playerFourExists = snapshot.child("3").exists();
         if (playerOneExists === false)
         {
-            createPlayerOnBase(0);
             playerOneExists = true;
             playerNumber = 0;
         }
         else if (playerTwoExists === false)
         {
-            createPlayerOnBase(1);
             playerTwoExists = true;
             playerNumber = 1;
         }
         else if (playerThreeExists === false)
         {
-            createPlayerOnBase(2);
             playerThreeExists = true;
             playerNumber = 2;
         }
         else if (playerFourExists === false)
         {
-            createPlayerOnBase(3);
             playerFourExists = true;
             playerNumber = 3;
         }
@@ -219,10 +213,10 @@ function newName() {
             playersRef.once("value", function(snapshot) {
                 avatarCall(snapshot.child(playerNumber).val().name, playerNumber);
             });
-           playerRef = database.ref("/players/" + playerNumber);
+            createPlayerOnBase(playerNumber);
         }
         //If a player disconnects, remove them from firebse.  ***STILL NEED TO SOMEHOW REMOVE CARD.
-         playerRef.onDisconnect().remove(); 
+        playerRef.onDisconnect().remove(); 
     });
     // $("#inputButtons").hide();
     //**UI NEED-Please let the player who had just submitted their name that they are still waiting for other players.
@@ -238,6 +232,18 @@ function newName() {
         return name.charAt(0).toUpperCase() + name.slice(1);
     }
 };
+function printScore(number) {
+    var playerScore;
+    playersRef.once("value", function(snapshot){
+        playerScore = snapshot.child(number).val().correct;
+    })
+    $(`#player-${number}`).html("Score:  " + playerScore);
+};
+function printScoreEveryPlayer() {
+    for (var i = 0; i < 4; i++) {
+        printScore(i);
+    }
+}
 //This function creates the player object on firebase
 function createPlayerOnBase(number) {
     playerNumber = number;
@@ -409,6 +415,7 @@ function setUpHTML() {
 //function that displays the questions and answers
 function showQuestionsAnswers()
 {
+    printScoreEveryPlayer();
     hasChosenAnswer=false;
     //displays questions in questionsText
     questionsRef.once("value", function(snapshot) { 
@@ -449,18 +456,6 @@ function showQuestionsAnswers()
         }
     });
 };
-//if user has ran out of time
-function timedOut() {
-    //add to the score
-    timeOuts++;
-    //update the text, clear the answers
-    $("#question").text("Time is up!");
-    $("#answers").empty();
-    //stop timer
-    clearInterval(timerMech);
-    //wait 4 seconds and continue to next question or final screen
-    setTimeout(moveOn, 4000);
-};
 //increases qCount to move to the next question
 function moveOn()
 {
@@ -485,19 +480,44 @@ function moveOn()
         }
     });
 };
-//HERE AND BELOW, STILL WORKING ON CLICK EVENTS WHEN USER CHOOSES CORRECT/WRONG ANSWER
+// function to increase wrongs by 1 for the player locally and in the database
+function updateWrongs() {
+    playerRef.once("value", function(snapshot) {
+        incorrects = snapshot.val().incorrect;
+    });
+    incorrects++;
+    playerRef.child("incorrect").set(incorrects);
+};
+//if user has ran out of time
+function timedOut() {
+    //add to the score
+    timeOuts++;
+    //update the text, clear the answers
+    updateWrongs();
+    $("#question").text("Time is up!");
+    $("#answers").empty();
+    //stop timer
+    clearInterval(timerMech);
+    //wait 4 seconds and continue to next question or final screen
+    setTimeout(moveOn, 4000);
+};
 function rightChoice() {
-    corrects++;
     hasChosenAnswer = true;
     $("#question").text("You got it!");
+    playerRef.once("value", function(snapshot) {
+        corrects = snapshot.val().correct;
+        console.log(snapshot.val());
+    });
+    corrects++;
+    playerRef.child("correct").set(corrects);
     $("#answers").empty();
     clearInterval(timerMech);
     setTimeout(moveOn, 4000);
 };
 function wrongChoice() {
-    incorrects++;
     hasChosenAnswer = true;
     $("#question").text("You're wrong!");
+    updateWrongs();
     $("#answers").empty();
     clearInterval(timerMech);
     setTimeout(moveOn, 4000);
@@ -508,5 +528,5 @@ function hideStuff() {
 };
 $(document).ready(function () {
     clickListeners();
-    hideStuff()
+    hideStuff();
 });
