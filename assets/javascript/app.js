@@ -109,6 +109,7 @@ function avatarCall(username, playerNumber) {
             .html(username)
             .appendTo(smallerDiv);
         score
+            .attr("id", `player-${playerNumber}`)
             .addClass("score")
             .html("Score:  ")
             .appendTo(smallerDiv);
@@ -231,6 +232,18 @@ function newName() {
         return name.charAt(0).toUpperCase() + name.slice(1);
     }
 };
+function printScore(number) {
+    var playerScore;
+    playersRef.once("value", function(snapshot){
+        playerScore = snapshot.child(number).val().correct;
+    })
+    $(`#player-${number}`).html("Score:  " + playerScore);
+};
+function printScoreEveryPlayer() {
+    for (var i = 0; i < 4; i++) {
+        printScore(i);
+    }
+}
 //This function creates the player object on firebase
 function createPlayerOnBase(number) {
     playerNumber = number;
@@ -402,6 +415,7 @@ function setUpHTML() {
 //function that displays the questions and answers
 function showQuestionsAnswers()
 {
+    printScoreEveryPlayer();
     hasChosenAnswer=false;
     //displays questions in questionsText
     questionsRef.once("value", function(snapshot) { 
@@ -442,19 +456,6 @@ function showQuestionsAnswers()
         }
     });
 };
-//if user has ran out of time
-function timedOut() {
-    //add to the score
-    timeOuts++;
-    //update the text, clear the answers
-    updateWrongs();
-    $("#question").text("Time is up!");
-    $("#answers").empty();
-    //stop timer
-    clearInterval(timerMech);
-    //wait 4 seconds and continue to next question or final screen
-    setTimeout(moveOn, 4000);
-};
 //increases qCount to move to the next question
 function moveOn()
 {
@@ -482,18 +483,30 @@ function moveOn()
 // function to increase wrongs by 1 for the player locally and in the database
 function updateWrongs() {
     playerRef.once("value", function(snapshot) {
-
         incorrects = snapshot.val().incorrect;
     });
     incorrects++;
-    playerRef.child("incorrect").set(incorrects)
+    playerRef.child("incorrect").set(incorrects);
+};
+//if user has ran out of time
+function timedOut() {
+    //add to the score
+    timeOuts++;
+    //update the text, clear the answers
+    updateWrongs();
+    $("#question").text("Time is up!");
+    $("#answers").empty();
+    //stop timer
+    clearInterval(timerMech);
+    //wait 4 seconds and continue to next question or final screen
+    setTimeout(moveOn, 4000);
 };
 function rightChoice() {
     hasChosenAnswer = true;
     $("#question").text("You got it!");
     playerRef.once("value", function(snapshot) {
         corrects = snapshot.val().correct;
-        console.log(`playerRef.once("value", snapshot.val():` + snapshot.val());
+        console.log(snapshot.val());
     });
     corrects++;
     playerRef.child("correct").set(corrects);
@@ -515,5 +528,5 @@ function hideStuff() {
 };
 $(document).ready(function () {
     clickListeners();
-    hideStuff()
+    hideStuff();
 });
