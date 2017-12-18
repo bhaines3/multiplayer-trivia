@@ -210,10 +210,8 @@ function newName() {
         //if there are still room for more players, continue adding the players. If not, don't add anymore.
         if (numOfPlayers < 4)
         {
-            playersRef.once("value", function(snapshot) {
-                avatarCall(snapshot.child(playerNumber).val().name, playerNumber);
-            });
             createPlayerOnBase(playerNumber);
+            avatarCall(userName, playerNumber);
         }
         //If a player disconnects, remove them from firebse.  ***STILL NEED TO SOMEHOW REMOVE CARD.
         playerRef.onDisconnect().remove(); 
@@ -297,7 +295,7 @@ function clickListeners() {
         if (e.which == 13) {
             newName();
             $("#modalButtons").find("input:text").val("");
-            $("#inputName").modal("hide");   
+            //$("#inputName").modal("hide");   
         }
     });
     //When the game started ** WE WILL NEED TO SOMEHOW DETERMINE WHEN ALL 4 PLAYERS HAVE SUCCESSFULLY CLICKED THIS BUTTON. For now, it is single player
