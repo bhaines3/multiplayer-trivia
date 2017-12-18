@@ -287,7 +287,7 @@ function checkStatus() {
     }
 };
 function clickListeners() {
-    //Whena  new name has been submitted
+    //When a new name has been submitted
     $(document).on("click", "#submitButton", function() {
         newName();
         $("#inputName").modal("hide");
@@ -296,7 +296,8 @@ function clickListeners() {
     $(document).keypress(function(e) {
         if (e.which == 13) {
             newName();
-            $("#inputName").modal("hide");
+            $("#modalButtons").find("input:text").val("");
+            $("#inputName").modal("hide");   
         }
     });
     //When the game started ** WE WILL NEED TO SOMEHOW DETERMINE WHEN ALL 4 PLAYERS HAVE SUCCESSFULLY CLICKED THIS BUTTON. For now, it is single player
@@ -526,6 +527,14 @@ function hideStuff() {
     $("#questionsBox").hide();
     $("#timer").hide();
 };
+$(document).on("click", ".helpButton", function() {
+   $(".helpButton").hide();
+   $(".helpButton1").show();
+});
+$(document).on("click", ".helpButton1", function() {
+    $(".helpButton1").hide();
+    $(".helpButton").show();
+ });
 $(document).ready(function () {
     clickListeners();
     hideStuff();

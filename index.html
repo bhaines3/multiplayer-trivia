@@ -43,7 +43,7 @@
                                 <!-- Modal -->
                                 <div class="modal fade" id="inputName" tabindex="-1" role="dialog" aria-labelledby="inputNameLabel" aria-hidden="true">
                                         <div class="modal-dialog" role="document">
-                                                <div class="modal-content">
+                                                <div class="modal-content" id="modalButtons">
                                                         <div class="modal-header">
                                                                 <h5 class="modal-title" id="modalTitle">Name</h5>
                                                                 <button type="button" class="close" data-dismiss="modal" aria-label="Close">
@@ -56,7 +56,8 @@
                                                         <div class="modal-footer">
                                                                 <button type="button" class="btn btn-outline-dark" data-dismiss="modal">Close</button>
                                                                 <!-- <button type="submit" id="submitButton" class="btn btn-outline-dark">Submit</button> -->
-                                                                <button type="submit" id="submitButton" class="btn btn-outline-dark" data-dismiss="modal"> Submit</button>
+                                                                <button type="submit" id="submitButton" class="btn btn-outline-dark" data-dismiss="modal">Submit</button>
+
                                                         </div>
                                                 </div>
                                         </div>
@@ -94,18 +95,20 @@
                         </div>
                 </div>
         <!-- Player Cards -->
-                <div class="row justify-content-center" id="player-cards"></div>       
+      
                 <footer class="footer">
 
                         <div class="wrapper text-center" id="footerBubble">
                                 <div class="collapse" id="thoughtBubble">
-                                <div class="card card-body">
-                                        © Copyright 2017 Jason Leo, Michelle Le, Andrew Kippur, and Brandon Haines
+                                <div class="card-body">
+                                        
+                                        <button class="btn btn-outline-dark helpButton1 text-right" type="button" data-toggle="collapse" data-target="#thoughtBubble" aria-expanded="false" aria-controls="thoughtBubble">       
+                                        <div class="text-center text-light">© Copyright 2017 Jason Leo, Michelle Le, Andrew Kippur, and Brandon Haines</div>
+                                        </button>
                                 </div>
-
                                 </div>
                         </div>
-                        <button class="btn btn-outline-dark" type="button" data-toggle="collapse" data-target="#thoughtBubble" aria-expanded="false" aria-controls="thoughtBubble">
+                        <button class="btn btn-outline-dark helpButton" type="button" data-toggle="collapse" data-target="#thoughtBubble" aria-expanded="false" aria-controls="thoughtBubble">
                         💁
                         </button>
                 </footer>
