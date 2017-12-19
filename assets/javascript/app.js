@@ -20,12 +20,15 @@ var userName = "";
 var questionsArray = [];
 var timer = 10;
 var qCount = 0;
+var points = 0;
 var corrects = 0;
 var incorrects = 0;
 var timeOuts = 0;
 var timerMech;
 var numOfPlayers;
-var isApi;
+var isApi = false;
+var isIt = false;
+var isQuestionAnswered = database.ref("isQuestionAnswered");
 var isApiGrabbed = database.ref("isApiGrabbed");
 var apiQuestionCount = database.ref("currQuestionNumber");
 var playerOneCardExists = null;
@@ -42,8 +45,12 @@ var playerThreeNotReady;
 var playerFourNotReady;
 //This variable measures when a user has clicked an answer. Error prevention for if user is able to press the correct/wrong answer multiple times
 var hasChosenAnswer = false;
+var hasOneGuessed;
+var hasTwoGuessed;
+var hasThreeGuessed;
+var hasFourGuessed;
 isApiGrabbed.set(false);
-
+isQuestionAnswered.set(false);
 apiQuestionCount.once("value",function(snapshot){
     if (playerNumber === 0)
     {
@@ -51,13 +58,16 @@ apiQuestionCount.once("value",function(snapshot){
     }
 });
 //Initialize everything. Checking firebase to see what already exists so that when players come on, they see how many players have already signed in.
+// MICHELLE, will you please explain this part to me... O actually I think I understand.
+// this function listens to see if the API is grabbed and if so it retrieves the questions
 isApiGrabbed.on("value",function(snapshot){
-    if ((snapshot.val() === true) && playerNumber !== 0)
+    if (snapshot.val() === true)
     {
-        placeQuestionsAnswersToFirebase();
+        retrieveQuestionsAnswersFromFirebase();
         setTimeout(checkStatus, 2500);
     }
 });
+
 playersRef.on("value", function(snapshot){
     //Checking and storing to see what players already exist
     playerOneExists = snapshot.child("0").exists();
@@ -70,23 +80,49 @@ playersRef.on("value", function(snapshot){
             avatarCall(snapshot.child(0).val().name,0);
             playerOneCardExists = true;
         }
+    else if (playerOneExists === false)
+        {
+            $("#player-cards").find("#card-0").remove();
+            playerOneCardExists = false;
+        }
     if (playerTwoExists === true)
         {
             avatarCall(snapshot.child(1).val().name,1);
             playerTwoCardExists = true;
+        }
+    else if (playerTwoExists === false)
+        {
+            $("#player-cards").find("#card-1").remove();
+            playerTwoCardExists = false;
         }
     if (playerThreeExists === true)
         {
             avatarCall(snapshot.child(2).val().name,2);
             playerThreeCardExists = true;
         }
+    else if (playerThreeExists === false)
+        {
+            $("#player-cards").find("#card-2").remove();
+            playerThreeCardExists = false;
+        }
     if (playerFourExists === true)
         {
             avatarCall(snapshot.child(3).val().name,3);
             playerFourCardExists = true;
         }
+    else if (playerFourExists === false)
+        {
+            $("#player-cards").find("#card-3").remove();
+            playerFourCardExists = false;
+        }
 });
 // functions
+function initializeGuesses() {
+    var hasOneGuessed = false;
+    var hasTwoGuessed = false;
+    var hasThreeGuessed = false;
+    var hasFourGuessed = false;
+};
 function avatarCall(username, playerNumber) {
     function makeCard(username)
     {
@@ -117,10 +153,12 @@ function avatarCall(username, playerNumber) {
             .addClass("card-body")
             .appendTo(thisWillBeACard);
         thisWillBeACard
+            .attr("id", username)
             .addClass("card rounded")
             .css({"width":"13rem"})
             .appendTo(thisWillBeADiv);
         thisWillBeADiv
+            .attr("id", `card-${playerNumber}`)
             .attr("class", "col-3")
             .appendTo($("#player-cards"));
     }
@@ -213,6 +251,8 @@ function newName() {
             createPlayerOnBase(playerNumber);
             avatarCall(userName, playerNumber);
         }
+        //line of code that makes the users own card sit in front of the others (I hope)
+        $(`#${userName}`).css({"z-index":"1"});
         //If a player disconnects, remove them from firebse.  ***STILL NEED TO SOMEHOW REMOVE CARD.
         playerRef.onDisconnect().remove(); 
     });
@@ -230,13 +270,21 @@ function newName() {
         return name.charAt(0).toUpperCase() + name.slice(1);
     }
 };
+// this function prints scores to a card
 function printScore(number) {
     var playerScore;
     playersRef.once("value", function(snapshot){
-        playerScore = snapshot.child(number).val().correct;
+        playerPoints = snapshot.child(number).val().points;
+        playerCorrects = snapshot.child(number).val().correct;
+        playerIncorrects = snapshot.child(number).val().incorrect;
     })
-    $(`#player-${number}`).html("Score:  " + playerScore);
+    $(`#player-${number}`)
+        .html("Points:  " + playerPoints + "<br>" +
+              "Corrects:  " + playerCorrects + "<br>" +
+              "Incorrects: " + playerIncorrects)
+        
 };
+// this function prints scores to every card
 function printScoreEveryPlayer() {
     for (var i = 0; i < 4; i++) {
         printScore(i);
@@ -249,6 +297,7 @@ function createPlayerOnBase(number) {
     playerRef.set({
         // name     
         name: userName,
+        points: 0,
         // correct answers (per round?)
         correct: 0,
         // incorrect answers
@@ -256,25 +305,27 @@ function createPlayerOnBase(number) {
         timeCorrect: 0,
         wins: 0,
         losses: 0,
+        guessed: false,
     });
 };
 //This function allows players to see the ready button. **MICHELLE, ADD THE MULTIPLAYER COMPONENT***
 function whatNext () {
-    $("#readyButton")
-        .html("<p class='lead'><a class='btn btn-outline-dark btn-lg'  href='#' role='button'>Get Ready!</a></p>");
+    readyButton = $("<button>");
+    readyButton
+        .html("<p class='lead'><a class='btn btn-outline-dark btn-lg'  href='#' role='button'>Get Ready!</a></p>")
+        .attr("id", "readyButton")
+        .appendTo("#header");
 };
 function initGame () {
-    if (playerNumber === 0) {
+    if (isApi === false) {
         apiQuestionCount.set(qCount);
         grabApi();
     }
 };
 function checkStatus() {
     isApiGrabbed.once("value", function(snapshot){
-        console.log(snapshot.val());
         isApi = snapshot.val();
-        console.log(isApi);
-    })
+    });
     if (isApi && playerFourExists) {
         alert("game starting!");
         $("#questionText").empty();
@@ -289,25 +340,22 @@ function clickListeners() {
     $(document).on("click", "#submitButton", function() {
         newName();
         $("#inputName").modal("hide");
-        
     });
     $(document).keypress(function(e) {
         if (e.which == 13) {
             newName();
             $("#modalButtons").find("input:text").val("");
-            //$("#inputName").modal("hide");   
+            $("#inputName").modal("hide");   
         }
     });
     //When the game started ** WE WILL NEED TO SOMEHOW DETERMINE WHEN ALL 4 PLAYERS HAVE SUCCESSFULLY CLICKED THIS BUTTON. For now, it is single player
     $(document).on("click", "#readyButton", function() {
-        console.log(playerOneNotReady);
-        console.log(numOfPlayers);
         initGame();
         setTimeout(checkStatus, 2500);
-        console.log("The game has started");
     });
     $(document).on("click", ".answer", function(event) {
         if (hasChosenAnswer === false)
+        playerRef.child("guessed").set(true);
         {
             if ($(this).attr("id") === "correctAnswer")
             {
@@ -350,25 +398,21 @@ function startGame()
     startTimer();
 };
 function placeQuestionsAnswersToFirebase() {
-    if (playerNumber === 0)
+    for (var i = 0; i < questionsArray.length; i++)
     {
-        for (var i = 0; i < questionsArray.length; i++)
-        {
-            questionRef = database.ref("/questions/" + i)
-            questionRef.set({
-                question: questionsArray[i].question,
-                rightAnswer: questionsArray[i].correct_answer,
-                wrongAnswers: questionsArray[i].incorrect_answers
-            })
-        }   
-    }
-    else
-    {
-        questionsRef.once("value", function(snapshot){
-            questionsArray = snapshot.val();
-        });
-    }
-    
+        questionRef = database.ref("/questions/" + i)
+        questionRef.set({
+            question: questionsArray[i].question,
+            rightAnswer: questionsArray[i].correct_answer,
+            wrongAnswers: questionsArray[i].incorrect_answers
+        })
+    } 
+};
+function retrieveQuestionsAnswersFromFirebase() {
+    questionsArray = [];
+    questionsRef.once("value", function(snapshot){
+        questionsArray = snapshot.val();
+    });
 };
 function startTimer()
 {
@@ -415,12 +459,13 @@ function setUpHTML() {
 function showQuestionsAnswers()
 {
     printScoreEveryPlayer();
+    isQuestionAnswered.set(false);
     hasChosenAnswer=false;
+    initializeGuesses();
     //displays questions in questionsText
     questionsRef.once("value", function(snapshot) { 
             $("#questionText").html(snapshot.child(qCount).val().question);
         });
-
     //randomizes placement of answers ***I COULD NOT FIND A WAY TO MAKE IT NEATER. IF YOU CAN, HELP?
     var randomCorrect = Math.floor(Math.random() * 4)+1;
     questionsRef.once("value", function(snapshot) { 
@@ -460,24 +505,25 @@ function moveOn()
 {
     apiQuestionCount.once("value", function(snapshot){
         //if there are still questions left, setUpHTML and run tmer again.
-        if (qCount < questionsArray.length-1)
-        {
-            qCount++;
-            if (playerNumber === 0)
-            {
-                apiQuestionCount.set(qCount);
-            }
-            setUpHTML();
-            timer = 10;
-            startTimer();
-            showQuestionsAnswers();
-        }
-        else
-        {
-            alert("the game ends here")
-            //final screen
-        }
+        qCount = snapshot.val();
     });
+    if (qCount < questionsArray.length-1)
+    {
+        setUpHTML();
+        timer = 10;
+        startTimer();
+        showQuestionsAnswers();
+    }
+    else
+    {
+        alert("the game ends here")
+        //final screen
+    }
+    if (playerNumber === 0)
+    {
+        qCount++;
+        apiQuestionCount.set(qCount);
+    };
 };
 // function to increase wrongs by 1 for the player locally and in the database
 function updateWrongs() {
@@ -491,35 +537,51 @@ function updateWrongs() {
 function timedOut() {
     //add to the score
     timeOuts++;
+    //guessed must be set to true to continue...
+    playerRef.child("guessed").set(true);
     //update the text, clear the answers
     updateWrongs();
     $("#question").text("Time is up!");
-    $("#answers").empty();
-    //stop timer
-    clearInterval(timerMech);
-    //wait 4 seconds and continue to next question or final screen
-    setTimeout(moveOn, 4000);
+    canWeContinue();
 };
 function rightChoice() {
     hasChosenAnswer = true;
+    isQuestionAnswered.once("value", function(snapshot){
+        isIt = snapshot.val();
+        if (isIt === false) {
+            points++;
+            playerRef.child("points").set(points);
+            isQuestionAnswered.set(true);
+        }
+    });
     $("#question").text("You got it!");
     playerRef.once("value", function(snapshot) {
         corrects = snapshot.val().correct;
-        console.log(snapshot.val());
     });
     corrects++;
     playerRef.child("correct").set(corrects);
-    $("#answers").empty();
-    clearInterval(timerMech);
-    setTimeout(moveOn, 4000);
+    canWeContinue();
 };
 function wrongChoice() {
     hasChosenAnswer = true;
     $("#question").text("You're wrong!");
     updateWrongs();
-    $("#answers").empty();
-    clearInterval(timerMech);
-    setTimeout(moveOn, 4000);
+    canWeContinue();
+};
+function canWeContinue() {
+    playersRef.once("value", function(snapshot){
+        hasOneGuessed = snapshot.child(0).val().guessed;
+        hasTwoGuessed = snapshot.child(1).val().guessed;
+        hasThreeGuessed = snapshot.child(2).val().guessed;
+        hasFourGuessed = snapshot.child(3).val().guessed;
+    });
+    if (hasOneGuessed && hasTwoGuessed && hasThreeGuessed && hasFourGuessed) {
+        $("#answers").empty();
+        //stop timer
+        clearInterval(timerMech);
+        //wait 4 seconds and continue to next question or final screen
+        setTimeout(moveOn, 4000);
+    };
 };
 function hideStuff() {
     $("#questionsBox").hide();
@@ -533,7 +595,8 @@ $(document).on("click", ".helpButton1", function() {
     $(".helpButton1").hide();
     $(".helpButton").show();
  });
-$(document).ready(function () {
+$(document).ready(function() {
     clickListeners();
     hideStuff();
+    $('#inputName').modal("show");
 });

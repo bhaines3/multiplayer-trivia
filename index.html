@@ -3,18 +3,17 @@
         <head>
                 <meta charset="utf-8">
                 <meta name="viewport" content="width=device-width, initial-scale=1">
+<!-- Added link to the jQuery Library -->
+                <script src="https://code.jquery.com/jquery-3.2.1.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4=" crossorigin="anonymous"></script>
 <!-- Added links to the Bootstrap js Libraries -->
-                <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN" crossorigin="anonymous"></script>
                 <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.3/umd/popper.min.js" integrity="sha384-vFJXuSJphROIrBnz7yo7oB41mKfc8JzQZiCq4NCceLEaO4IHwicKwpJf9c9IpFgh" crossorigin="anonymous"></script>
                 <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta.2/js/bootstrap.min.js" integrity="sha384-alpBpkh1PFOepccYVYDB4do5UnbKysX5WZXm3XxPqe5iKTfUKjNkCk9SaVuEZflJ" crossorigin="anonymous"></script>
 <!-- Added a link to firebase -->
                 <script src="https://www.gstatic.com/firebasejs/live/3.0/firebase.js"></script>
-<!-- Added link to the jQuery Library -->
-                <script src="https://code.jquery.com/jquery-3.2.1.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4=" crossorigin="anonymous"></script>
 <!-- Added a link to app.js -->
                 <script src="assets/javascript/app.js"></script> 
 <!-- Added a link to chat.js 
-                <script src="assets/javascript/chat.js"></script> 
+                <script src="assets/javascript/chat.js"></script> -->
 <!-- Added a link to google font -->
                 <link href="https://fonts.googleapis.com/css?family=Ubuntu" rel="stylesheet">
 <!-- Added a link to meyerweb reset -->
@@ -31,49 +30,30 @@
                                 <h1 class="display-3 text-center">Pod Power Multiplayer Trivia!</h1>
                                 <p class="lead text-center">Answer the question as fast as you can!</p>
                                 <p class="lead text-center">The player who answers correctly the quickest wins the point!</p>
-                                <div id="readyButton">                 
+                                <div id="readyButton justify-content-center">                 
                                 </div>
                         </div>
-                        <!-- Button trigger modal -->
+                        <!-- modal -->
                         <div class="container">
-                                <button type="button" class="btn btn-outline-dark" data-toggle="modal" data-target="#inputName">
-                                        Enter Username
-                                </button>
-                                
-                                <!-- Modal -->
-                                <div class="modal fade" id="inputName" tabindex="-1" role="dialog" aria-labelledby="inputNameLabel" aria-hidden="true">
+                                <div class="modal fade" id="inputName" tabindex="-1" role="dialog">
                                         <div class="modal-dialog" role="document">
                                                 <div class="modal-content" id="modalButtons">
                                                         <div class="modal-header">
                                                                 <h5 class="modal-title" id="modalTitle">Name</h5>
                                                                 <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                                                                <span aria-hidden="true">&times;</span>
+                                                                <span>&times;</span>
                                                                 </button>
                                                         </div>
                                                         <div class="modal-body">
                                                                 <input type="text" class="form-control mb-2 mb-sm-0" id="userName" placeholder="Enter Name">
                                                         </div>
                                                         <div class="modal-footer">
-                                                                <button type="button" class="btn btn-outline-dark" data-dismiss="modal">Close</button>
-                                                                <!-- <button type="submit" id="submitButton" class="btn btn-outline-dark">Submit</button> -->
                                                                 <button type="submit" id="submitButton" class="btn btn-outline-dark" data-dismiss="modal">Submit</button>
-
                                                         </div>
                                                 </div>
                                         </div>
                                 </div>
                         </div>
-                        <!-- <div class="container">
-                                <div class="wrapper">
-                                        <div class="form-row align-items-center">
-                                                <div class="col-sm-3 form-group" id="inputButtons">
-                                                        <label>Name</label>
-                                                        <input type="text" class="form-control mb-2 mb-sm-0" id="userName" placeholder="Enter Name">
-                                                        <button type="submit" id="submitButton" class="btn btn-outline-dark mt-2">Submit</button>
-                                                </div>
-                                        </div>
-                                </div>
-                        </div> -->
                 </div>
         <!-- Timer Box -->
                 <div class="row">
