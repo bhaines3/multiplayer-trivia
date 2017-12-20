@@ -21,6 +21,8 @@ body {
     background-image: url("https://www.toptal.com/designers/subtlepatterns/patterns/doodles.png");
     font-family: 'Ubuntu', sans-serif;
     margin-top: 0;
+    margin-bottom: 0;
+    padding-bottom: 0;
     padding-top: 0;
 }
 
