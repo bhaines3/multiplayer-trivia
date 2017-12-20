@@ -25,10 +25,19 @@ var corrects = 0;
 var timerMech;
 var numOfPlayers;
 var playerPoints;
+var playerWins;
+var playerTies;
 var numOfRounds = 0;
 var isApi = false;
 var gameStarted = false;
 var isApiGrabbed = database.ref("isApiGrabbed");
+var myScore;
+var wins;
+var ties;
+var playerOneScore;
+var playerTwoScore;
+var playerThreeScore;
+var playerFourScore;
 var playerOneCardExists = null;
 var playerTwoCardExists = null;
 var playerThreeCardExists = null;
@@ -252,9 +261,13 @@ function printScore(number) {
     var playerScore;
     playersRef.once("value", function(snapshot){
         playerPoints = snapshot.child(number).val().points;
+        playerWins = snapshot.child(number).val().wins;
+        playerTies = snapshot.child(number).val().ties;
     })
     $(`#player-${number}`)
-        .html("Score:  " + playerPoints);
+        .html("Score:  " + playerPoints + "<br>" +
+              "Wins: " + playerWins + "<br>" +
+              "Ties: " + playerTies);
 };
 // this function prints scores to every card
 function printScoreEveryPlayer() {
@@ -271,6 +284,7 @@ function createPlayerOnBase(number) {
         name: userName,
         points: 0,
         wins: 0,
+        ties: 0,
         hasFinished: false,
         isReady: false,
     });
@@ -288,12 +302,10 @@ playersRef.on("value", function(snapshot) {
     isTwoReady = snapshot.child(1).val().isReady;
     isThreeReady = snapshot.child(2).val().isReady;
     isFourReady = snapshot.child(3).val().isReady;
-    if (gameStarted === false)
-    {
-        return;
-    }
-    else if (hasOneFinished && hasTwoFinished && hasThreeFinished && hasFourFinished) {
+    if (hasOneFinished && hasTwoFinished && hasThreeFinished && hasFourFinished) {
         printScoreEveryPlayer();
+        //final screen, highlight winner
+        determineWins();
         console.log("this must be working!");
         gameStarted = false;
         whatNext();
@@ -341,6 +353,7 @@ function clickListeners() {
     //When the game started ** WE WILL NEED TO SOMEHOW DETERMINE WHEN ALL 4 PLAYERS HAVE SUCCESSFULLY CLICKED THIS BUTTON. For now, it is single player
     $(document).on("click", "#readyButton", function() {
         qCount = 0;
+        cancelFinishes();
         initGame();
         playerRef.child("isReady").set(true);
         $("#readyButton").text("Waiting for other players");
@@ -504,11 +517,41 @@ function moveOn()
         clearInterval(timerMech);
         console.log("the round ends here");
         playerRef.child("hasFinished").set(true);
-        //final screen, highlight winner
         playerRef.child("isReady").set(false);
-        
     }
     
+};
+function determineWins() {
+    playersRef.once("value", function(){
+        playerOneScore = snapshot.child(0).val().score;
+        playerTwoScore = snapshot.child(1).val().score;
+        playerThreeScore = snapshot.child(2).val().score;
+        playerFourScore = snapshot.child(3).val().score;
+    });
+    if (playerNumber === 0) {
+        myScore = playerOneScore;
+        playerOneScore = 0;
+    } else if (playerNumber === 1) {
+        myScore = playerTwoScore;
+        playerTwoScore = 0;
+    } else if (playerNumber === 2) {
+        myScore = playerThreeScore;
+        playerThreeScore = 0;
+    } else if (playerNumber === 3) {
+        myScore = playerFourScore;
+        playerFourScore = 0;
+    } else {
+        console.log("then who are you??? " + userName + "?");
+    };
+    if (myScore > (playerOneScore && playerTwoScore && playerThreeScore && playerFourScore)) {
+        wins = playerRef.child("wins").val();
+        wins++;
+        playerRef.child("wins").set(wins);
+    } else if (myScore === (playerOneScore || playerTwoScore || playerThreeScore || playerFourScore)) {
+        ties = playerRef.child("ties").val();
+        ties++;
+        playerRef.child("ties").set(ties);
+    }
 };
 //if user has ran out of time
 function timedOut() {
