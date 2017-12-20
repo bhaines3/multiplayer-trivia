@@ -279,9 +279,7 @@ function printScore(number) {
         playerIncorrects = snapshot.child(number).val().incorrect;
     })
     $(`#player-${number}`)
-        .html("Points:  " + playerPoints + "<br>" +
-              "Corrects:  " + playerCorrects + "<br>" +
-              "Incorrects: " + playerIncorrects)
+        .html("Points:  " + playerPoints + "<br>")
         
 };
 // this function prints scores to every card
