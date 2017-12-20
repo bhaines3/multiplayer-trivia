@@ -155,7 +155,7 @@ function avatarCall(username, playerNumber) {
         thisWillBeACard
             .attr("id", username)
             .addClass("card rounded")
-            .css({"width":"13rem"})
+            .css({"max-width":"13rem"})
             .appendTo(thisWillBeADiv);
         thisWillBeADiv
             .attr("id", `card-${playerNumber}`)
