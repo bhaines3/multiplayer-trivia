@@ -86,10 +86,10 @@ body {
 #timer {
     margin: 5px;
     text-align: center;
-    background-image: url("https://www.toptal.com/designers/subtlepatterns/patterns/hypnotize.png");
     border: solid black 1px;
-    box-shadow: 	#ADD8E6 2px 5px;
+    box-shadow: #2495AE 2px 5px;
     color: black;
+   
 }
 
 #question {
@@ -97,6 +97,7 @@ body {
     border: solid 1px black;
     box-shadow: #2495AE 2px 5px;
     text-align: center;
+    margin-top: 10px;
 }
 
 #inputName {
