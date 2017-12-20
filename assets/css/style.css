@@ -87,9 +87,9 @@ body {
     margin: 5px;
     text-align: center;
     border: solid black 1px;
-    box-shadow: 	#ADD8E6 2px 5px;
+    box-shadow: #2495AE 2px 5px;
     color: black;
-    opacity: .80;
+   
 }
 
 #question {
@@ -97,6 +97,7 @@ body {
     border: solid 1px black;
     box-shadow: #2495AE 2px 5px;
     text-align: center;
+    margin-top: 10px;
 }
 
 #inputName {
