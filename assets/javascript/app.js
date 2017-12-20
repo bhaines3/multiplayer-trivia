@@ -274,7 +274,7 @@ function createPlayerOnBase(number) {
         hasFinished: true,
     });
 };
-function initFinishes() {
+function cancelFinishes() {
     playerRef.child("hasFinished").set(false);
 };
 function hasEveryoneFinished() {
@@ -287,7 +287,7 @@ function hasEveryoneFinished() {
     });
     if (hasOneFinished && hasTwoFinished && hasThreeFinished && hasFourFinished) {
         printScoreEveryPlayer();
-        console.log("this must be working!")
+        console.log("this must be working!");
     } else {
         hasEveryoneFinished();
     }
@@ -311,6 +311,7 @@ function checkStatus() {
     });
     if (isApi && playerFourExists) {
         alert("game starting!");
+        cancelFinishes();
         $("#questionText").empty();
         $("#answers").empty();
         $("#readyButton").empty();
@@ -493,6 +494,7 @@ function moveOn()
     else
     {
         console.log("the round ends here");
+        playerRef.child("hasFinished").set(true);
         hasEveryoneFinished();
         //final screen
     }
