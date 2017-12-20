@@ -271,27 +271,23 @@ function createPlayerOnBase(number) {
         name: userName,
         points: 0,
         wins: 0,
-        hasFinished: true,
+        hasFinished: false,
     });
 };
 function cancelFinishes() {
     playerRef.child("hasFinished").set(false);
 };
-function hasEveryoneFinished() {
-    playersRef.once("value", function(snapshot) {
-            //Checking for some galdang finishes
-            hasOneFinished = snapshot.child(0).val().hasFinished;
-            hasTwoFinished = snapshot.child(1).val().hasFinished;
-            hasThreeFinished = snapshot.child(2).val().hasFinished;
-            hasFourFinished = snapshot.child(3).val().hasFinished;
-    });
+playersRef.on("value", function(snapshot) {
+    //Checking for some galdang finishes
+    hasOneFinished = snapshot.child(0).val().hasFinished;
+    hasTwoFinished = snapshot.child(1).val().hasFinished;
+    hasThreeFinished = snapshot.child(2).val().hasFinished;
+    hasFourFinished = snapshot.child(3).val().hasFinished;
     if (hasOneFinished && hasTwoFinished && hasThreeFinished && hasFourFinished) {
         printScoreEveryPlayer();
         console.log("this must be working!");
-    } else {
-        hasEveryoneFinished();
     }
-};
+});
 //This function allows players to see the ready button. **MICHELLE, ADD THE MULTIPLAYER COMPONENT***
 function whatNext () {
     // readyButton = $("<button>");
@@ -358,7 +354,7 @@ function clickListeners() {
 //Sets up how the page first looks before start of game **STILL NEED TO MAKE PRETTY.
 $("#countDown").text("Time left: "+timer);
 function grabApi() {
-    var queryURL = `https://opentdb.com/api.php?amount=10&difficulty=easy&type=multiple`;
+    var queryURL = `https://opentdb.com/api.php?amount=1&difficulty=easy&type=multiple`;
     $.ajax({
         type: "GET",
         url: queryURL
@@ -494,7 +490,6 @@ function moveOn()
     {
         console.log("the round ends here");
         playerRef.child("hasFinished").set(true);
-        hasEveryoneFinished();
         //final screen
     }
     
