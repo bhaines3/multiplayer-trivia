@@ -335,7 +335,6 @@ function clickListeners() {
     //When the game started ** WE WILL NEED TO SOMEHOW DETERMINE WHEN ALL 4 PLAYERS HAVE SUCCESSFULLY CLICKED THIS BUTTON. For now, it is single player
     $(document).on("click", "#readyButton", function() {
         initGame();
-        setTimeout(checkStatus, 2500);
     });
     $(document).on("click", ".answer", function(event) {
         if (hasChosenAnswer === false)
