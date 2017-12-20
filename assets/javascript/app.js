@@ -18,6 +18,7 @@ var questionsRef = database.ref("questions");
 var questionRef;
 var userName = "";
 var questionsArray = [];
+var correctAnswer;
 var timer = 10;
 var qCount = 0;
 var corrects = 0;
@@ -445,9 +446,10 @@ function showQuestionsAnswers()
     //randomizes placement of answers ***I COULD NOT FIND A WAY TO MAKE IT NEATER. IF YOU CAN, HELP?
     var randomCorrect = Math.floor(Math.random() * 4)+1;
     questionsRef.once("value", function(snapshot) { 
+        correctAnswer = snapshot.child(qCount).val().rightAnswer;
         $("#answer"+randomCorrect)
             .attr("id", "correctAnswer")
-            .html(snapshot.child(qCount).val().rightAnswer);
+            .html(correctAnswer);
         if (randomCorrect === 1)
         {
             for (var i = 0; i < 3; i++)
@@ -491,7 +493,14 @@ function moveOn()
     {
         console.log("the round ends here");
         playerRef.child("hasFinished").set(true);
-        //final screen
+        //final screen, highlight winner
+        playerRef.child("isReady").set(false);
+        if (!isOneReady && !isTwoReady && !isThreeReady && !isFourReady)
+        {
+            gameStarted = false;
+            whatNext();
+            $("#readyButton").html("<p class='lead'><a class='btn btn-outline-dark btn-lg'  href='#' role='button'>Ready for next round?</a></p>");
+        }
     }
     
 };
@@ -499,12 +508,12 @@ function moveOn()
 function timedOut() {
     //update the text, clear the answers
     clearInterval(timerMech);
-    $("#question").text("Time is up!");
+    $("#question").text("Time is up! The correct answer was ..." + correctAnswer);
     setTimeout(moveOn, 4000);
 };
 function rightChoice() {
     hasChosenAnswer = true;
-    $("#question").text("You got it!");
+    $("#question").text("You got it!  The correct answer was ..." + correctAnswer);
     playerRef.once("value", function(snapshot) {
         corrects = snapshot.val().points;
     });
@@ -514,7 +523,7 @@ function rightChoice() {
 };
 function wrongChoice() {
     hasChosenAnswer = true;
-    $("#question").text("You're wrong!");
+    $("#question").text("You're wrong!  The correct answer was ..." + correctAnswer);
     setTimeout(moveOn, 4000);
 };
 function hideStuff() {
