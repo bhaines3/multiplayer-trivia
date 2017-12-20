@@ -288,7 +288,11 @@ playersRef.on("value", function(snapshot) {
     isTwoReady = snapshot.child(1).val().isReady;
     isThreeReady = snapshot.child(2).val().isReady;
     isFourReady = snapshot.child(3).val().isReady;
-    if (hasOneFinished && hasTwoFinished && hasThreeFinished && hasFourFinished) {
+    if (gameStarted === false)
+    {
+        return;
+    }
+    else if (hasOneFinished && hasTwoFinished && hasThreeFinished && hasFourFinished) {
         printScoreEveryPlayer();
         console.log("this must be working!");
         gameStarted = false;
@@ -336,6 +340,7 @@ function clickListeners() {
     });
     //When the game started ** WE WILL NEED TO SOMEHOW DETERMINE WHEN ALL 4 PLAYERS HAVE SUCCESSFULLY CLICKED THIS BUTTON. For now, it is single player
     $(document).on("click", "#readyButton", function() {
+        qCount = 0;
         initGame();
         playerRef.child("isReady").set(true);
         $("#readyButton").text("Waiting for other players");
@@ -446,7 +451,7 @@ function showQuestionsAnswers()
     hasChosenAnswer=false;
     //displays questions in questionsText
     questionsRef.once("value", function(snapshot) { 
-            $("#questionText").html(snapshot.child(qCount).val().question);
+            $("#questionText").html((qCount+1) + ".) " + snapshot.child(qCount).val().question);
         });
     //randomizes placement of answers ***I COULD NOT FIND A WAY TO MAKE IT NEATER. IF YOU CAN, HELP?
     var randomCorrect = Math.floor(Math.random() * 4)+1;
@@ -496,6 +501,7 @@ function moveOn()
     }
     else
     {
+        clearInterval(timerMech);
         console.log("the round ends here");
         playerRef.child("hasFinished").set(true);
         //final screen, highlight winner
@@ -508,12 +514,12 @@ function moveOn()
 function timedOut() {
     //update the text, clear the answers
     clearInterval(timerMech);
-    $("#question").text((qCount+1) + ".) Time is up! The correct answer was ..." + correctAnswer);
+    $("#question").html("Time is up! The correct answer was... " + correctAnswer);
     setTimeout(moveOn, 4000);
 };
 function rightChoice() {
     hasChosenAnswer = true;
-    $("#question").text((qCount+1) + ".) You got it!  The correct answer was ..." + correctAnswer);
+    $("#question").html("You got it!  The correct answer was... " + correctAnswer);
     playerRef.once("value", function(snapshot) {
         corrects = snapshot.val().points;
     });
@@ -523,7 +529,7 @@ function rightChoice() {
 };
 function wrongChoice() {
     hasChosenAnswer = true;
-    $("#question").text((qCount+1) + ".) You're wrong!  The correct answer was ..." + correctAnswer);
+    $("#question").html("You're wrong!  The correct answer was... " + correctAnswer);
     setTimeout(moveOn, 4000);
 };
 function hideStuff() {
