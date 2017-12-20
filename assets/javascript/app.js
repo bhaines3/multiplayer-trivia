@@ -354,7 +354,7 @@ function clickListeners() {
 //Sets up how the page first looks before start of game **STILL NEED TO MAKE PRETTY.
 $("#countDown").text("Time left: "+timer);
 function grabApi() {
-    var queryURL = `https://opentdb.com/api.php?amount=1&difficulty=easy&type=multiple`;
+    var queryURL = `https://opentdb.com/api.php?amount=10&difficulty=easy&type=multiple`;
     $.ajax({
         type: "GET",
         url: queryURL
