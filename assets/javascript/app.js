@@ -248,7 +248,7 @@ function newName() {
     }
 };
 // this function prints scores to a card
-function printScore(pumber) {
+function printScore(number) {
     var playerScore;
     playersRef.once("value", function(snapshot){
         playerPoints = snapshot.child(number).val().points;
