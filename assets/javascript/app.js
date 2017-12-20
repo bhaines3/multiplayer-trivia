@@ -25,6 +25,7 @@ var corrects = 0;
 var timerMech;
 var numOfPlayers;
 var playerPoints;
+var numOfRounds = 0;
 var isApi = false;
 var gameStarted = false;
 var isApiGrabbed = database.ref("isApiGrabbed");
@@ -290,11 +291,15 @@ playersRef.on("value", function(snapshot) {
     if (hasOneFinished && hasTwoFinished && hasThreeFinished && hasFourFinished) {
         printScoreEveryPlayer();
         console.log("this must be working!");
+        gameStarted = false;
+        whatNext();
+        $("#readyButton").html("<p class='lead'><a class='btn btn-outline-dark btn-lg'  href='#' role='button'>Ready for next round?</a></p>");
     }
     if (gameStarted) {
         return
     } else if (isOneReady && isTwoReady && isThreeReady && isFourReady)
-    { 
+    {
+        numOfRounds++;
         retrieveQuestionsAnswersFromFirebase();
         setTimeout(checkStatus, 2500);
     }
@@ -495,12 +500,7 @@ function moveOn()
         playerRef.child("hasFinished").set(true);
         //final screen, highlight winner
         playerRef.child("isReady").set(false);
-        if (!isOneReady && !isTwoReady && !isThreeReady && !isFourReady)
-        {
-            gameStarted = false;
-            whatNext();
-            $("#readyButton").html("<p class='lead'><a class='btn btn-outline-dark btn-lg'  href='#' role='button'>Ready for next round?</a></p>");
-        }
+        
     }
     
 };
@@ -508,12 +508,12 @@ function moveOn()
 function timedOut() {
     //update the text, clear the answers
     clearInterval(timerMech);
-    $("#question").text("Time is up! The correct answer was ..." + correctAnswer);
+    $("#question").text((qCount+1) + ".) Time is up! The correct answer was ..." + correctAnswer);
     setTimeout(moveOn, 4000);
 };
 function rightChoice() {
     hasChosenAnswer = true;
-    $("#question").text("You got it!  The correct answer was ..." + correctAnswer);
+    $("#question").text((qCount+1) + ".) You got it!  The correct answer was ..." + correctAnswer);
     playerRef.once("value", function(snapshot) {
         corrects = snapshot.val().points;
     });
@@ -523,7 +523,7 @@ function rightChoice() {
 };
 function wrongChoice() {
     hasChosenAnswer = true;
-    $("#question").text("You're wrong!  The correct answer was ..." + correctAnswer);
+    $("#question").text((qCount+1) + ".) You're wrong!  The correct answer was ..." + correctAnswer);
     setTimeout(moveOn, 4000);
 };
 function hideStuff() {
