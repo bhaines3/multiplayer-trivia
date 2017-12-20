@@ -293,11 +293,11 @@ function hasEveryoneFinished() {
 };
 //This function allows players to see the ready button. **MICHELLE, ADD THE MULTIPLAYER COMPONENT***
 function whatNext () {
-    readyButton = $("<button>");
-    readyButton
-        .html("<p class='lead'><a class='btn btn-outline-dark btn-lg'  href='#' role='button'>Get Ready!</a></p>")
-        .attr("id", "readyButton")
-        .appendTo("#header");
+    // readyButton = $("<button>");
+    $("#readyButton")
+    .html("<p class='lead'><a class='btn btn-outline-dark btn-lg'  href='#' role='button'>Get Ready!</a></p>");
+        // .attr("id", "readyButton")
+        // .appendTo("#header");
 };
 function initGame () {
     if (isApi === false) {
