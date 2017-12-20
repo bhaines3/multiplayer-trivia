@@ -18,7 +18,7 @@ body {
 }
 
 .jumbotron {
-    background-image: url("https://www.toptal.com/designers/subtlepatterns/patterns/doodles.png");
+    /* background-image: url("https://www.toptal.com/designers/subtlepatterns/patterns/doodles.png"); */
     font-family: 'VT323', monospace;
     margin-top: 0;
     margin-bottom: 0;
@@ -30,6 +30,7 @@ body {
 body {
     font-family: 'VT323', monospace;
     background-image: url("https://www.toptal.com/designers/subtlepatterns/patterns/doodles.png");
+    background-image: url("https://i.imgur.com/UZKEjzG.png");
 }
 
 .row {
