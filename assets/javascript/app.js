@@ -25,6 +25,7 @@ var timerMech;
 var numOfPlayers;
 var playerPoints;
 var isApi = false;
+var gameStarted = false;
 var isApiGrabbed = database.ref("isApiGrabbed");
 var playerOneCardExists = null;
 var playerTwoCardExists = null;
@@ -40,17 +41,14 @@ var hasOneFinished;
 var hasTwoFinished;
 var hasThreeFinished;
 var hasFourFinished;
+var isOneReady;
+var isTwoReady;
+var isThreeReady;
+var isFourReady;
 isApiGrabbed.set(false);
 //Initialize everything. Checking firebase to see what already exists so that when players come on, they see how many players have already signed in.
 // MICHELLE, will you please explain this part to me... O actually I think I understand.
 // this function listens to see if the API is grabbed and if so it retrieves the questions
-isApiGrabbed.on("value",function(snapshot){
-    if (snapshot.val() === true)
-    {
-        retrieveQuestionsAnswersFromFirebase();
-        setTimeout(checkStatus, 2500);
-    }
-});
 playersRef.on("value", function(snapshot){
     //Checking and storing to see what players already exist
     playerOneExists = snapshot.child("0").exists();
@@ -216,7 +214,7 @@ function newName() {
         }
         else if (playerOneExists && playerTwoExists && playerThreeExists && playerFourExists)
         {
-            alert("Too many players! Wait until there is room! Try again later")
+            $("#instructions").html('Too many players! Wait until there is room! <a href="https://bhaines3.github.io/multiplayer-trivia">Try again</a> later');
         }
 
         //Counts the number of players
@@ -272,6 +270,7 @@ function createPlayerOnBase(number) {
         points: 0,
         wins: 0,
         hasFinished: false,
+        isReady: false,
     });
 };
 function cancelFinishes() {
@@ -283,37 +282,38 @@ playersRef.on("value", function(snapshot) {
     hasTwoFinished = snapshot.child(1).val().hasFinished;
     hasThreeFinished = snapshot.child(2).val().hasFinished;
     hasFourFinished = snapshot.child(3).val().hasFinished;
+    isOneReady = snapshot.child(0).val().isReady;
+    isTwoReady = snapshot.child(1).val().isReady;
+    isThreeReady = snapshot.child(2).val().isReady;
+    isFourReady = snapshot.child(3).val().isReady;
     if (hasOneFinished && hasTwoFinished && hasThreeFinished && hasFourFinished) {
         printScoreEveryPlayer();
         console.log("this must be working!");
     }
+    if (gameStarted) {
+        return
+    } else if (isOneReady && isTwoReady && isThreeReady && isFourReady)
+    { 
+        retrieveQuestionsAnswersFromFirebase();
+        setTimeout(checkStatus, 2500);
+    }
 });
 //This function allows players to see the ready button. **MICHELLE, ADD THE MULTIPLAYER COMPONENT***
 function whatNext () {
-    // readyButton = $("<button>");
     $("#readyButton")
     .html("<p class='lead'><a class='btn btn-outline-dark btn-lg'  href='#' role='button'>Get Ready!</a></p>");
-        // .attr("id", "readyButton")
-        // .appendTo("#header");
 };
 function initGame () {
-    if (isApi === false) {
+    if (isApi === false && playerNumber === 0) {
         grabApi();
     }
 };
 function checkStatus() {
-    isApiGrabbed.once("value", function(snapshot){
-        isApi = snapshot.val();
-    });
-    if (isApi && playerFourExists) {
-        alert("game starting!");
-        cancelFinishes();
-        $("#questionText").empty();
-        $("#answers").empty();
-        $("#readyButton").empty();
-        startGame();
-        //Prepping the layout to start the game and display our questions
-    }
+    cancelFinishes();
+    $("#questionText").empty();
+    $("#answers").empty();
+    $("#readyButton").empty();
+    startGame();
 };
 function clickListeners() {
     //When a new name has been submitted
@@ -331,6 +331,8 @@ function clickListeners() {
     //When the game started ** WE WILL NEED TO SOMEHOW DETERMINE WHEN ALL 4 PLAYERS HAVE SUCCESSFULLY CLICKED THIS BUTTON. For now, it is single player
     $(document).on("click", "#readyButton", function() {
         initGame();
+        playerRef.child("isReady").set(true);
+        $("#readyButton").text("Waiting for other players");
     });
     $(document).on("click", ".answer", function(event) {
         if (hasChosenAnswer === false)
@@ -354,6 +356,7 @@ function clickListeners() {
 //Sets up how the page first looks before start of game **STILL NEED TO MAKE PRETTY.
 $("#countDown").text("Time left: "+timer);
 function grabApi() {
+    isApiGrabbed.set(true);
     var queryURL = `https://opentdb.com/api.php?amount=10&difficulty=easy&type=multiple`;
     $.ajax({
         type: "GET",
@@ -363,12 +366,12 @@ function grabApi() {
         //collects the items we want from the API and stores it into an existing array.
         questionsArray = response.results;
         placeQuestionsAnswersToFirebase();
-        isApiGrabbed.set(true);
     });
 }
 function startGame()
 {
     //starts the timer, sets up HTML for the questions, then displays questions/answers. See each function for more information
+    gameStarted = true;
     setUpHTML();
     $("#questionsBox").show();
     $("#timer").show();
@@ -415,8 +418,6 @@ function startTimer()
 };
 //This function sets up the HTML to prepare for the placement of questions/answers
 function setUpHTML() {
-    // $("#questionsBox").html("<div  class='card' id='question'><div id='questionText'></div><div id='answers'></div><div class='card-body row'></div></div>");
-    // $("#timer").html("<div class='card'><div class='card-body'><h4 class='card-title'>Timer</h4><div class='time' id='countDown' ></div></div></div>");
     $("#question").empty();
     questionDiv = $("<div>");
     questionDiv.attr("id", "questionText");
@@ -496,8 +497,6 @@ function moveOn()
 };
 //if user has ran out of time
 function timedOut() {
-    //guessed must be set to true to continue...
-    playerRef.child("guessed").set(true);
     //update the text, clear the answers
     clearInterval(timerMech);
     $("#question").text("Time is up!");
