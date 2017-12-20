@@ -94,3 +94,7 @@ body {
     box-shadow: #2495AE 2px 5px;
     text-align: center;
 }
+
+#inputName {
+    top: 300px;
+}
