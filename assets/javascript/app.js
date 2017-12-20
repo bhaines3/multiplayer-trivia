@@ -20,17 +20,11 @@ var userName = "";
 var questionsArray = [];
 var timer = 10;
 var qCount = 0;
-var points = 0;
 var corrects = 0;
-var incorrects = 0;
-var timeOuts = 0;
 var timerMech;
 var numOfPlayers;
 var isApi = false;
-var isIt = false;
-var isQuestionAnswered = database.ref("isQuestionAnswered");
 var isApiGrabbed = database.ref("isApiGrabbed");
-var apiQuestionCount = database.ref("currQuestionNumber");
 var playerOneCardExists = null;
 var playerTwoCardExists = null;
 var playerThreeCardExists = null;
@@ -39,24 +33,13 @@ var playerOneExists = null;
 var playerTwoExists = null;
 var playerThreeExists = null;
 var playerFourExists = null;
-var playerOneNotReady;
-var playerTwoNotReady;
-var playerThreeNotReady;
-var playerFourNotReady;
 //This variable measures when a user has clicked an answer. Error prevention for if user is able to press the correct/wrong answer multiple times
 var hasChosenAnswer = false;
-var hasOneGuessed;
-var hasTwoGuessed;
-var hasThreeGuessed;
-var hasFourGuessed;
+var hasOneFinished;
+var hasTwoFinished;
+var hasThreeFinished;
+var hasFourFinished;
 isApiGrabbed.set(false);
-isQuestionAnswered.set(false);
-apiQuestionCount.once("value",function(snapshot){
-    if (playerNumber === 0)
-    {
-    snapshot.set(qCount);
-    }
-});
 //Initialize everything. Checking firebase to see what already exists so that when players come on, they see how many players have already signed in.
 // MICHELLE, will you please explain this part to me... O actually I think I understand.
 // this function listens to see if the API is grabbed and if so it retrieves the questions
@@ -67,7 +50,6 @@ isApiGrabbed.on("value",function(snapshot){
         setTimeout(checkStatus, 2500);
     }
 });
-
 playersRef.on("value", function(snapshot){
     //Checking and storing to see what players already exist
     playerOneExists = snapshot.child("0").exists();
@@ -117,12 +99,6 @@ playersRef.on("value", function(snapshot){
         }
 });
 // functions
-function initializeGuesses() {
-    var hasOneGuessed = false;
-    var hasTwoGuessed = false;
-    var hasThreeGuessed = false;
-    var hasFourGuessed = false;
-};
 function avatarCall(username, playerNumber) {
     function makeCard(username)
     {
@@ -274,13 +250,10 @@ function newName() {
 function printScore(number) {
     var playerScore;
     playersRef.once("value", function(snapshot){
-        playerPoints = snapshot.child(number).val().points;
-        playerCorrects = snapshot.child(number).val().correct;
-        playerIncorrects = snapshot.child(number).val().incorrect;
+        var playerPoints = snapshot.child(number).val().points;
     })
     $(`#player-${number}`)
-        .html("Points:  " + playerPoints + "<br>")
-        
+        .html("Score:  " + playerPoints);
 };
 // this function prints scores to every card
 function printScoreEveryPlayer() {
@@ -296,15 +269,27 @@ function createPlayerOnBase(number) {
         // name     
         name: userName,
         points: 0,
-        // correct answers (per round?)
-        correct: 0,
-        // incorrect answers
-        incorrect: 0,
-        timeCorrect: 0,
         wins: 0,
-        losses: 0,
-        guessed: false,
+        hasFinished: true,
     });
+};
+function initFinishes() {
+    playerRef.child("hasFinished").set(false);
+};
+function hasEveryoneFinished() {
+    playersRef.once("value", function(snapshot) {
+            //Checking for some galdang finishes
+            hasOneFinished = snapshot.child(0).val().hasFinished;
+            hasTwoFinished = snapshot.child(1).val().hasFinished;
+            hasThreeFinished = snapshot.child(2).val().hasFinished;
+            hasFourFinished = snapshot.child(3).val().hasFinished;
+    });
+    if (hasOneFinished && hasTwoFinished && hasThreeFinished && hasFourFinished) {
+        printScoreEveryPlayer();
+        console.log("this must be working!")
+    } else {
+        hasEveryoneFinished();
+    }
 };
 //This function allows players to see the ready button. **MICHELLE, ADD THE MULTIPLAYER COMPONENT***
 function whatNext () {
@@ -316,7 +301,6 @@ function whatNext () {
 };
 function initGame () {
     if (isApi === false) {
-        apiQuestionCount.set(qCount);
         grabApi();
     }
 };
@@ -353,7 +337,6 @@ function clickListeners() {
     });
     $(document).on("click", ".answer", function(event) {
         if (hasChosenAnswer === false)
-        playerRef.child("guessed").set(true);
         {
             if ($(this).attr("id") === "correctAnswer")
             {
@@ -456,10 +439,7 @@ function setUpHTML() {
 //function that displays the questions and answers
 function showQuestionsAnswers()
 {
-    printScoreEveryPlayer();
-    isQuestionAnswered.set(false);
     hasChosenAnswer=false;
-    initializeGuesses();
     //displays questions in questionsText
     questionsRef.once("value", function(snapshot) { 
             $("#questionText").html(snapshot.child(qCount).val().question);
@@ -501,85 +481,45 @@ function showQuestionsAnswers()
 //increases qCount to move to the next question
 function moveOn()
 {
-    apiQuestionCount.once("value", function(snapshot){
-        //if there are still questions left, setUpHTML and run tmer again.
-        qCount = snapshot.val();
-    });
     if (qCount < questionsArray.length-1)
     {
         setUpHTML();
         timer = 10;
         startTimer();
         showQuestionsAnswers();
+        qCount++;
     }
     else
     {
-        alert("the game ends here")
+        console.log("the round ends here");
+        hasEveryoneFinished();
         //final screen
     }
-    if (playerNumber === 0)
-    {
-        qCount++;
-        apiQuestionCount.set(qCount);
-    };
-};
-// function to increase wrongs by 1 for the player locally and in the database
-function updateWrongs() {
-    playerRef.once("value", function(snapshot) {
-        incorrects = snapshot.val().incorrect;
-    });
-    incorrects++;
-    playerRef.child("incorrect").set(incorrects);
+    
 };
 //if user has ran out of time
 function timedOut() {
-    //add to the score
-    timeOuts++;
     //guessed must be set to true to continue...
     playerRef.child("guessed").set(true);
     //update the text, clear the answers
-    updateWrongs();
+    clearInterval(timerMech);
     $("#question").text("Time is up!");
-    canWeContinue();
+    moveOn();
 };
 function rightChoice() {
     hasChosenAnswer = true;
-    isQuestionAnswered.once("value", function(snapshot){
-        isIt = snapshot.val();
-        if (isIt === false) {
-            points++;
-            playerRef.child("points").set(points);
-            isQuestionAnswered.set(true);
-        }
-    });
     $("#question").text("You got it!");
     playerRef.once("value", function(snapshot) {
-        corrects = snapshot.val().correct;
+        corrects = snapshot.val().points;
     });
     corrects++;
-    playerRef.child("correct").set(corrects);
-    canWeContinue();
+    playerRef.child("points").set(corrects);
+    moveOn();
 };
 function wrongChoice() {
     hasChosenAnswer = true;
     $("#question").text("You're wrong!");
-    updateWrongs();
-    canWeContinue();
-};
-function canWeContinue() {
-    playersRef.once("value", function(snapshot){
-        hasOneGuessed = snapshot.child(0).val().guessed;
-        hasTwoGuessed = snapshot.child(1).val().guessed;
-        hasThreeGuessed = snapshot.child(2).val().guessed;
-        hasFourGuessed = snapshot.child(3).val().guessed;
-    });
-    if (hasOneGuessed && hasTwoGuessed && hasThreeGuessed && hasFourGuessed) {
-        $("#answers").empty();
-        //stop timer
-        clearInterval(timerMech);
-        //wait 4 seconds and continue to next question or final screen
-        setTimeout(moveOn, 4000);
-    };
+    moveOn();
 };
 function hideStuff() {
     $("#questionsBox").hide();
