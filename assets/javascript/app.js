@@ -118,7 +118,7 @@ function avatarCall(username, playerNumber) {
             .appendTo(thisWillBeACard);
         thisWillBeACard
             .addClass("card rounded")
-            .css({"width":"13rem"})
+            .css({"max-width":"13rem"})
             .appendTo(thisWillBeADiv);
         thisWillBeADiv
             .attr("class", "col-3")
