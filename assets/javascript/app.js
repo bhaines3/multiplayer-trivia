@@ -502,6 +502,7 @@ function timedOut() {
     //guessed must be set to true to continue...
     playerRef.child("guessed").set(true);
     //update the text, clear the answers
+    clearInterval(timerMech);
     $("#question").text("Time is up!");
     moveOn();
 };
