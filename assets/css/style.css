@@ -19,7 +19,7 @@ body {
 
 .jumbotron {
     background-image: url("https://www.toptal.com/designers/subtlepatterns/patterns/doodles.png");
-    font-family: 'Ubuntu', sans-serif;
+    font-family: 'VT323', monospace;
     margin-top: 0;
     margin-bottom: 0;
     padding-bottom: 0;
@@ -28,7 +28,7 @@ body {
 
 
 body {
-    font-family: 'Ubuntu', sans-serif;
+    font-family: 'VT323', monospace;
     background-image: url("https://www.toptal.com/designers/subtlepatterns/patterns/doodles.png");
 }
 
