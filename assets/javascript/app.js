@@ -23,6 +23,7 @@ var qCount = 0;
 var corrects = 0;
 var timerMech;
 var numOfPlayers;
+var playerPoints;
 var isApi = false;
 var isApiGrabbed = database.ref("isApiGrabbed");
 var playerOneCardExists = null;
@@ -247,10 +248,10 @@ function newName() {
     }
 };
 // this function prints scores to a card
-function printScore(number) {
+function printScore(pumber) {
     var playerScore;
     playersRef.once("value", function(snapshot){
-        var playerPoints = snapshot.child(number).val().points;
+        playerPoints = snapshot.child(number).val().points;
     })
     $(`#player-${number}`)
         .html("Score:  " + playerPoints);
@@ -504,7 +505,7 @@ function timedOut() {
     //update the text, clear the answers
     clearInterval(timerMech);
     $("#question").text("Time is up!");
-    moveOn();
+    setTimeout(moveOn, 4000);
 };
 function rightChoice() {
     hasChosenAnswer = true;
@@ -514,12 +515,12 @@ function rightChoice() {
     });
     corrects++;
     playerRef.child("points").set(corrects);
-    moveOn();
+    setTimeout(moveOn, 4000);
 };
 function wrongChoice() {
     hasChosenAnswer = true;
     $("#question").text("You're wrong!");
-    moveOn();
+    setTimeout(moveOn, 4000);
 };
 function hideStuff() {
     $("#questionsBox").hide();
