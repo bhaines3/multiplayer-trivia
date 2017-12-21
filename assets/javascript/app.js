@@ -235,7 +235,7 @@ function newName(input) {
         }
         // line of code that makes the users own card have a nice white border
         $(`#${userName}`).css({"border":"2px solid khaki"});
-        // If a player disconnects, remove them from firebse.
+        // If a player disconnects, remove them from firebase.
         playerRef.onDisconnect().remove(); 
     });
     // $("#inputButtons").hide();
