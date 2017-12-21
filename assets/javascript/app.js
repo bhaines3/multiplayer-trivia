@@ -56,7 +56,13 @@ var isOneReady;
 var isTwoReady;
 var isThreeReady;
 var isFourReady;
+
+var hasOneSet;
+var hasTwoSet;
+var hasThreeSet;
+var hasFourSet;
 isApiGrabbed.set(false);
+
 //Initialize everything. Checking firebase to see what already exists so that when players come on, they see how many players have already signed in.
 // MICHELLE, will you please explain this part to me... O actually I think I understand.
 // this function listens to see if the API is grabbed and if so it retrieves the questions
@@ -118,6 +124,7 @@ function avatarCall(username, playerNumber) {
         var avatar = $("<img/>");
         var smallerDiv = $("<div/>");
         var somebodysName = $("<h4/>");
+        var playerNum = $("<h4/>");
         var score = $("<p/>");
         imgPlace
             .addClass("row justify-content-center")
@@ -130,10 +137,14 @@ function avatarCall(username, playerNumber) {
         somebodysName
             .html(username)
             .appendTo(smallerDiv);
+        playerNum
+            .attr("id", `player-${playerNumber}`)
+            .addClass("playerNumber")
+            .html("Player " + (playerNumber+1))
+            .appendTo(smallerDiv);
         score
             .attr("id", `player-${playerNumber}`)
             .addClass("score")
-            .html("Score:  ")
             .appendTo(smallerDiv);
         smallerDiv
             .addClass("card-body")
@@ -195,8 +206,7 @@ function avatarCall(username, playerNumber) {
  };
 
 //function to place the new player on base. This function checks to see if players currently exist, and if not place this new player in that spot.
-function newName() {
-    var input = capitalize($("#userName").val().trim());
+function newName(input) {
     userName = input;
     playersRef.once("value", function(snapshot) {        
         playerOneExists = snapshot.child("0").exists();
@@ -251,11 +261,11 @@ function newName() {
     {
     whatNext();
     }
-    //function that capitalizes the first letter of the name typed into the game.
+};
+//function that capitalizes the first letter of the name typed into the game.
     function capitalize(name) {
         return name.charAt(0).toUpperCase() + name.slice(1);
     }
-};
 // this function prints scores to a card
 function printScore(number) {
     var playerScore;
@@ -287,11 +297,14 @@ function createPlayerOnBase(number) {
         ties: 0,
         hasFinished: false,
         isReady: false,
+        hasSet: false,
     });
 };
 function cancelFinishes() {
     playerRef.child("hasFinished").set(false);
 };
+
+
 playersRef.on("value", function(snapshot) {
     //Checking for some galdang finishes
     hasOneFinished = snapshot.child(0).val().hasFinished;
@@ -303,10 +316,10 @@ playersRef.on("value", function(snapshot) {
     isThreeReady = snapshot.child(2).val().isReady;
     isFourReady = snapshot.child(3).val().isReady;
     if (hasOneFinished && hasTwoFinished && hasThreeFinished && hasFourFinished) {
-        printScoreEveryPlayer();
+        $("#question").html("Here are the results!");
         //final screen, highlight winner
-        determineWins();
-        console.log("this must be working!");
+        determineWins(snapshot);
+        printScoreEveryPlayer();
         gameStarted = false;
         whatNext();
         $("#readyButton").html("<p class='lead'><a class='btn btn-outline-dark btn-lg'  href='#' role='button'>Ready for next round?</a></p>");
@@ -315,11 +328,19 @@ playersRef.on("value", function(snapshot) {
         return
     } else if (isOneReady && isTwoReady && isThreeReady && isFourReady)
     {
+        database.ref("/players/0").child("isReady").set(false);
+        database.ref("/players/1").child("isReady").set(false);
+        database.ref("/players/2").child("isReady").set(false);
+        database.ref("/players/3").child("isReady").set(false);
+
         numOfRounds++;
+        cancelFinishes();
+        playerRef.child("hasSet").set(false);
         retrieveQuestionsAnswersFromFirebase();
         setTimeout(checkStatus, 2500);
     }
 });
+
 //This function allows players to see the ready button. **MICHELLE, ADD THE MULTIPLAYER COMPONENT***
 function whatNext () {
     $("#readyButton")
@@ -331,23 +352,56 @@ function initGame () {
     }
 };
 function checkStatus() {
-    cancelFinishes();
     $("#questionText").empty();
     $("#answers").empty();
     $("#readyButton").empty();
     startGame();
 };
+function checkName(input) {
+    if (input === "")
+        {
+            return false;
+        }
+    for (var i = 0; i < input.length; i++)
+    {
+        if (input.charCodeAt(i) < 48 ||
+            (input.charCodeAt(i) > 57 && input.charCodeAt(i) < 65) ||
+            (input.charCodeAt(i) > 90 && input.charCodeAt(i) < 97)  ||
+            input.charCodeAt(i) > 122)
+        {
+            return false;
+        }
+    }
+    return true;
+}
 function clickListeners() {
     //When a new name has been submitted
     $(document).on("click", "#submitButton", function() {
-        newName();
-        $("#inputName").modal("hide");
+        var input = capitalize($("#userName").val().trim());
+        if (checkName(input))
+        {
+            newName(input);
+            $("#inputName").modal("hide");
+        }
+        else
+        {
+            $("#modalTitle").html("Name UNACCEPTABLE. No blanks, symbols, or spaces!");
+        }
     });
     $(document).keypress(function(e) {
-        if (e.which == 13) {
-            newName();
-            $("#modalButtons").find("input:text").val("");
-            $("#inputName").modal("hide");   
+        if (e.which == 13) 
+        {
+            var input = capitalize($("#userName").val().trim());
+            if (checkName(input))
+            {
+                newName(input);
+                $("#modalButtons").find("input:text").val("");
+                $("#inputName").modal("hide");
+            }
+            else
+            {
+                $("#modalTitle").html("Name UNACCEPTABLE. No blanks, symbols, or spaces!");
+            }
         }
     });
     //When the game started ** WE WILL NEED TO SOMEHOW DETERMINE WHEN ALL 4 PLAYERS HAVE SUCCESSFULLY CLICKED THIS BUTTON. For now, it is single player
@@ -381,7 +435,7 @@ function clickListeners() {
 $("#countDown").text("Time left: "+timer);
 function grabApi() {
     isApiGrabbed.set(true);
-    var queryURL = `https://opentdb.com/api.php?amount=10&difficulty=easy&type=multiple`;
+    var queryURL = `https://opentdb.com/api.php?amount=2&difficulty=easy&type=multiple`;
     $.ajax({
         type: "GET",
         url: queryURL
@@ -397,6 +451,7 @@ function startGame()
     //starts the timer, sets up HTML for the questions, then displays questions/answers. See each function for more information
     gameStarted = true;
     setUpHTML();
+    $("#timerTitle").html("Timer<br>Round: " + numOfRounds);
     $("#questionsBox").show();
     $("#timer").show();
     showQuestionsAnswers();
@@ -421,6 +476,9 @@ function retrieveQuestionsAnswersFromFirebase() {
 };
 function startTimer()
 {
+    timer = 10;
+    clearInterval(timerMech);
+
     //timer begins using eggTimer function.
     timerMech = setInterval(eggTimer, 1000);
     function eggTimer(){
@@ -515,19 +573,27 @@ function moveOn()
     else
     {
         clearInterval(timerMech);
-        console.log("the round ends here");
-        playerRef.child("hasFinished").set(true);
+        $("#question").html("Waiting for other players to finish...");
         playerRef.child("isReady").set(false);
+        playerRef.child("hasFinished").set(true);
     }
     
 };
-function determineWins() {
-    playersRef.once("value", function(){
-        playerOneScore = snapshot.child(0).val().score;
-        playerTwoScore = snapshot.child(1).val().score;
-        playerThreeScore = snapshot.child(2).val().score;
-        playerFourScore = snapshot.child(3).val().score;
-    });
+function determineWins(playersSnapshot) {
+
+    var snapshot = playersSnapshot.child(playerNumber);
+
+    if (snapshot.val().hasSet)
+    {
+        return;
+    }
+    playerRef.child("hasSet").set(true);
+
+    playerOneScore = playersSnapshot.child(0).val().points;
+    playerTwoScore = playersSnapshot.child(1).val().points;
+    playerThreeScore = playersSnapshot.child(2).val().points;
+    playerFourScore = playersSnapshot.child(3).val().points;
+
     if (playerNumber === 0) {
         myScore = playerOneScore;
         playerOneScore = 0;
@@ -543,12 +609,21 @@ function determineWins() {
     } else {
         console.log("then who are you??? " + userName + "?");
     };
-    if (myScore > (playerOneScore && playerTwoScore && playerThreeScore && playerFourScore)) {
-        wins = playerRef.child("wins").val();
+
+    if ((myScore > playerOneScore) &&
+        (myScore > playerTwoScore) &&
+        (myScore > playerThreeScore) &&
+        (myScore > playerFourScore))
+    {
+        wins = snapshot.val().wins;
         wins++;
         playerRef.child("wins").set(wins);
-    } else if (myScore === (playerOneScore || playerTwoScore || playerThreeScore || playerFourScore)) {
-        ties = playerRef.child("ties").val();
+    } else if ((myScore === playerOneScore) ||
+        (myScore === playerTwoScore) ||
+        (myScore === playerThreeScore) || 
+        (myScore === playerFourScore))
+    {
+        ties = snapshot.val().ties;
         ties++;
         playerRef.child("ties").set(ties);
     }

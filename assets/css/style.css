@@ -6,6 +6,10 @@ html {
 
 body {
     margin-bottom: 60px; /* Margin bottom by footer height */
+    font-family: 'VT323', monospace;
+    background-image: url("https://www.toptal.com/designers/subtlepatterns/patterns/doodles.png");
+    background-image: url("https://i.imgur.com/UZKEjzG.png");
+    font-size: 22px;
 }
 
 .footer {
@@ -24,13 +28,6 @@ body {
     margin-bottom: 0;
     padding-bottom: 0;
     padding-top: 0;
-}
-
-
-body {
-    font-family: 'VT323', monospace;
-    background-image: url("https://www.toptal.com/designers/subtlepatterns/patterns/doodles.png");
-    background-image: url("https://i.imgur.com/UZKEjzG.png");
 }
 
 .row {
@@ -102,4 +99,7 @@ body {
 
 #inputName {
     top: 300px;
+}
+#instructions {
+    font-size: 22px;
 }
