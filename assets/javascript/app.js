@@ -64,6 +64,7 @@ var hasOneSet;
 var hasTwoSet;
 var hasThreeSet;
 var hasFourSet;
+var crownExists = false;
 // end of boolean checkers
 // end of vars
 // This listener checks to 
@@ -144,7 +145,7 @@ function avatarCall(username, playerNumber) {
             .html(username)
             .appendTo(smallerDiv);
         playerNum
-            .attr("id", `player-${playerNumber}`)
+            .attr("id", `playerNum-${playerNumber}`)
             .addClass("playerNumber")
             .html("Player " + (playerNumber+1))
             .appendTo(smallerDiv);
@@ -153,6 +154,7 @@ function avatarCall(username, playerNumber) {
             .addClass("score")
             .appendTo(smallerDiv);
         smallerDiv
+            .attr("id", `playerScore-${playerNumber}`)
             .addClass("card-body")
             .appendTo(thisWillBeACard);
         thisWillBeACard
@@ -316,6 +318,10 @@ function checkFinishes(snapshot) {
         database.ref("/players/1").child("isReady").set(false);
         database.ref("/players/2").child("isReady").set(false);
         database.ref("/players/3").child("isReady").set(false);
+        database.ref("/players/0").child("points").set(0);
+        database.ref("/players/1").child("points").set(0);
+        database.ref("/players/2").child("points").set(0);
+        database.ref("/players/3").child("points").set(0);
 
         numOfRounds++;
         cancelFinishes();
@@ -338,6 +344,16 @@ function checkStatus() {
     $("#questionText").empty();
     $("#answers").empty();
     $("#readyButton").empty();
+    if (crownExists === true)
+    {
+        document.getElementById("crown").remove();
+        crownExists = false;
+    }
+    $("#player-0").empty();
+    $("#player-1").empty();
+    $("#player-2").empty();
+    $("#player-3").empty();
+
     startGame();
 };
 function checkName(input) {
@@ -417,7 +433,7 @@ function clickListeners() {
 };
 function grabApi() {
     isApiGrabbed.set(true);
-    var queryURL = `https://opentdb.com/api.php?amount=5&difficulty=easy&type=multiple`;
+    var queryURL = `https://opentdb.com/api.php?amount=3&type=multiple`;
     $.ajax({
         type: "GET",
         url: queryURL
@@ -581,7 +597,63 @@ function determineWins(playersSnapshot) {
             playerRef.child("wins").set(wins);
         }
     }
+    displayWinner();
 };
+function displayWinner() {
+    var playerOneName;
+    var playerTwoName;
+    var playerThreeName;
+    var playerFourName;
+    var crownDiv = $("<div/>");
+    playersRef.once("value", function(snapshot){
+        playerOneScore = snapshot.child(0).val().points;
+        playerTwoScore = snapshot.child(1).val().points;
+        playerThreeScore = snapshot.child(2).val().points;
+        playerFourScore = snapshot.child(3).val().points;
+        playerOneName = snapshot.child(0).val().name;
+        playerTwoName = snapshot.child(0).val().name;
+        playerThreeName = snapshot.child(0).val().name;
+        playerFourName = snapshot.child(0).val().name;
+
+    });
+    if (playerOneScore > playerTwoScore &&
+        playerOneScore > playerThreeScore &&
+        playerOneScore > playerFourScore)
+    {
+        crownDiv
+            .addClass("image-fluid")
+            .attr("id", "crown")
+            .prependTo($("#playerScore-0"));
+    }
+    if (playerTwoScore > playerOneScore &&
+        playerTwoScore > playerThreeScore &&
+        playerTwoScore > playerFourScore)
+    {
+        crownDiv
+        .addClass("image-fluid")
+            .attr("id", "crown")
+            .prependTo($("#playerScore-1"));
+    }
+    if (playerThreeScore > playerOneScore &&
+        playerThreeScore > playerTwoScore &&
+        playerThreeScore > playerFourScore)
+    {
+        crownDiv
+        .addClass("image-fluid")
+            .attr("id", "crown")
+            .prependTo($("#playerScore-2"));
+    }
+    if (playerFourScore > playerOneScore &&
+        playerFourScore > playerTwoScore &&
+        playerFourScore > playerThreeScore)
+    {
+        crownDiv
+            .attr("id", "crown")
+            .prependTo($("#playerScore-3"));
+    }
+    $("#crown").html("<img src ='assets/images/crown.png'>");
+    crownExists = true;
+}
 //if user has ran out of time
 function timedOut() {
     //update the text, clear the answers
