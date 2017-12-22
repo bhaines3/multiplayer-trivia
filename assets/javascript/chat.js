@@ -1,17 +1,32 @@
-// these vars need to go in the right place
-var chatData = database.ref("/chat");
-var username = "guest";
-function makeChatArea() {
+var chatData;
+function makeChatButton() {
     var chatArea = $("<div>");
     var chatMessages = $("<pre>");
     var chatRow = $("<div>");
     var chatInput = $("<input>");
     var chatSend = $("<button>");
+    var chatButton = $("<button>");
+    var otherChatButton = $("<button>");
+    chatButton
+        .html("💬")
+        .attr("id","bubbleButton1")
+        .attr("class", "btn btn-outline-dark")
+        .css({"position":"absolute","bottom":"10px","right":"20px","z-index":"2"})
+        .appendTo("#header")
+    otherChatButton
+        .html("💬")
+        .attr("id","bubbleButton2")
+        .attr("class", "btn btn-outline-dark")
+        .css({"position":"absolute","bottom":"10px","right":"320px","z-index":"2"})
+        .appendTo("#header")
+        .hide();
     chatArea
-        .css({"position":"absolute","top":"200px","right":"20px","width":"225px","height":"30vh","background-color":"#f5f5f599"})
-        .appendTo($("#header"));
+        .css({"position":"absolute","bottom":"10px","right":"20px","width":"300px","height":"250px","background-color":"#f5f5f599","z-index":"2",})
+        .attr("id", "chat-area")
+        .appendTo($("#header"))
+        .hide();
     chatMessages
-        .css({"overflow":"auto"})
+        .css({"position":"absolute","bottom":"30px","overflow":"auto","width":"300px","height":"200px"})
         .attr("id", "chat-messages")
         .appendTo(chatArea);
     chatInput
@@ -26,65 +41,84 @@ function makeChatArea() {
         .attr("class", "row")
         .appendTo(chatArea);
 };
+function chatClickListeners() {
 // Chat send button listener, grabs input and pushes to firebase. (Firebase's push automatically creates a unique key)
-$("#chat-send").click(function() {
-
+  $("#bubbleButton1").click(function() {
+    $("#chat-area").show();
+    $("#bubbleButton2").show();
+    $("#bubbleButton1").hide();
+  });
+  $("#bubbleButton2").click(function() {
+    $("#chat-area").hide();
+    $("#bubbleButton2").hide();
+    $("#bubbleButton1").show();
+  });
+  $("#chat-send").click(function() {
     if ($("#chat-input").val() !== "") {
-  
       var message = $("#chat-input").val();
-  
       chatData.push({
-        name: username,
+        name: userName,
         message: message,
         time: firebase.database.ServerValue.TIMESTAMP,
         idNum: playerNumber
       });
-  
       $("#chat-input").val("");
     }
   });
   // Chatbox input listener
-$("#chat-input").keypress(function(e) {
-
+  $("#chat-input").keypress(function(e) {
     if (e.keyCode === 13 && $("#chat-input").val() !== "") {
-  
       var message = $("#chat-input").val();
-  
       chatData.push({
-        name: username,
+        name: userName,
         message: message,
         time: firebase.database.ServerValue.TIMESTAMP,
-        idNum: playerNumber
+        idNum: (playerNumber)
       });
-  
       $("#chat-input").val("");
     }
   });
-
-// Update chat on screen when new message detected - ordered by 'time' value
-chatData.orderByChild("time").on("child_added", function(snapshot) {
-
-    // If idNum is 0, then its a disconnect message and displays accordingly
-    // If not - its a user chat message
-    if (snapshot.val().idNum === 0) {
-      $("#chat-messages").append("<p class=player" + snapshot.val().idNum + "><span>"
-      + snapshot.val().name + "</span>: " + snapshot.val().message + "</p>");
-    }
-    else {
-      $("#chat-messages").append("<p class=player" + snapshot.val().idNum + "><span>"
-      + snapshot.val().name + "</span>: " + snapshot.val().message + "</p>");
-    }
-  
-    // Keeps div scrolled to bottom on each update.
+};
+function chatFirebaseListeners() {
+  // Update chat on screen when new message detected - ordered by 'time' value
+  chatData.orderByChild("time").on("child_added", function(snapshot) {
+    $("#chat-messages").append("<p class=player" + snapshot.val().idNum + "><span>"
+    + snapshot.val().name + "</span>: " + snapshot.val().message + "</p>");
     $("#chat-messages").scrollTop($("#chat-messages")[0].scrollHeight);
-});
-// var chatDataDisc = database.ref("/chat/" + Date.now());
-// chatDataDisc.onDisconnect().set({
-//     name: username,
-//     time: firebase.database.ServerValue.TIMESTAMP,
-//     message: "has disconnected.",
-//     idNum: 0
-// });
+  });
+};
+function canWeChat(snapshot) {
+  //Checking and storing to see what players already exist
+  playerOneExists = snapshot.child("0").exists();
+  playerTwoExists = snapshot.child("1").exists();
+  playerThreeExists = snapshot.child("2").exists();
+  playerFourExists = snapshot.child("3").exists();
+  if (playerOneExists && playerTwoExists && playerThreeExists && playerFourExists) {
+    chatPossible();
+  } else {
+    chatData.remove();
+    $("#bubbleButton1").remove();
+    $("#bubbleButton2").remove();
+    $("#chat-area").remove();
+  }
+};
+function chatPossible() {
+  // For adding disconnects to the chat with a unique id (the date/time the user entered the game)
+  // Needed because Firebase's '.push()' creates its unique keys client side,
+  // so you can't ".push()" in a ".onDisconnect"
+  chatData = database.ref("/chat");
+  var chatDataDisc = database.ref("/chat/" + playerNumber);
+  // Send disconnect message to chat with Firebase server generated timestamp and id of '0' to denote system message
+  chatDataDisc.onDisconnect().set({
+  name: userName,
+  time: firebase.database.ServerValue.TIMESTAMP,
+  message: "has disconnected.",
+  idNum: 0
+  });
+  makeChatButton();
+  chatClickListeners();
+  chatFirebaseListeners();
+};
 $(document).ready(function(){
-    makeChatArea();
+  playersRef.on("value", canWeChat);
 });
