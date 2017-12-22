@@ -109,9 +109,9 @@ function canWeChat(snapshot) {
 function chatPossible() {
   chatData = database.ref("/chat");
   makeChatButton();
+  chatClickListeners();
+  chatFirebaseListeners();
 };
 $(document).ready(function(){
   playersRef.on("value", canWeChat);
-  chatClickListeners();
-  chatFirebaseListeners();
 });
