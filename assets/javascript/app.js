@@ -64,7 +64,7 @@ var hasOneSet;
 var hasTwoSet;
 var hasThreeSet;
 var hasFourSet;
-var crownExists = false;
+// var crownExists = false;
 // end of boolean checkers
 // end of vars
 // This listener checks to 
@@ -344,16 +344,11 @@ function checkStatus() {
     $("#questionText").empty();
     $("#answers").empty();
     $("#readyButton").empty();
-    if (crownExists === true)
-    {
-        document.getElementById("crown").remove();
-        crownExists = false;
-    }
     $("#player-0").empty();
     $("#player-1").empty();
     $("#player-2").empty();
     $("#player-3").empty();
-
+    console.log("this is working");
     startGame();
 };
 function checkName(input) {
@@ -597,63 +592,63 @@ function determineWins(playersSnapshot) {
             playerRef.child("wins").set(wins);
         }
     }
-    displayWinner();
+    // displayWinner();
 };
-function displayWinner() {
-    var playerOneName;
-    var playerTwoName;
-    var playerThreeName;
-    var playerFourName;
-    var crownDiv = $("<div/>");
-    playersRef.once("value", function(snapshot){
-        playerOneScore = snapshot.child(0).val().points;
-        playerTwoScore = snapshot.child(1).val().points;
-        playerThreeScore = snapshot.child(2).val().points;
-        playerFourScore = snapshot.child(3).val().points;
-        playerOneName = snapshot.child(0).val().name;
-        playerTwoName = snapshot.child(0).val().name;
-        playerThreeName = snapshot.child(0).val().name;
-        playerFourName = snapshot.child(0).val().name;
+// function displayWinner() {
+//     var playerOneName;
+//     var playerTwoName;
+//     var playerThreeName;
+//     var playerFourName;
+//     var crownDiv = $("<div/>");
+//     playersRef.once("value", function(snapshot){
+//         playerOneScore = snapshot.child(0).val().points;
+//         playerTwoScore = snapshot.child(1).val().points;
+//         playerThreeScore = snapshot.child(2).val().points;
+//         playerFourScore = snapshot.child(3).val().points;
+//         playerOneName = snapshot.child(0).val().name;
+//         playerTwoName = snapshot.child(0).val().name;
+//         playerThreeName = snapshot.child(0).val().name;
+//         playerFourName = snapshot.child(0).val().name;
 
-    });
-    if (playerOneScore > playerTwoScore &&
-        playerOneScore > playerThreeScore &&
-        playerOneScore > playerFourScore)
-    {
-        crownDiv
-            .addClass("image-fluid")
-            .attr("id", "crown")
-            .prependTo($("#playerScore-0"));
-    }
-    if (playerTwoScore > playerOneScore &&
-        playerTwoScore > playerThreeScore &&
-        playerTwoScore > playerFourScore)
-    {
-        crownDiv
-        .addClass("image-fluid")
-            .attr("id", "crown")
-            .prependTo($("#playerScore-1"));
-    }
-    if (playerThreeScore > playerOneScore &&
-        playerThreeScore > playerTwoScore &&
-        playerThreeScore > playerFourScore)
-    {
-        crownDiv
-        .addClass("image-fluid")
-            .attr("id", "crown")
-            .prependTo($("#playerScore-2"));
-    }
-    if (playerFourScore > playerOneScore &&
-        playerFourScore > playerTwoScore &&
-        playerFourScore > playerThreeScore)
-    {
-        crownDiv
-            .attr("id", "crown")
-            .prependTo($("#playerScore-3"));
-    }
-    $("#crown").html("<img src ='assets/images/crown.png'>");
-    crownExists = true;
-}
+//     });
+//     if (playerOneScore > playerTwoScore &&
+//         playerOneScore > playerThreeScore &&
+//         playerOneScore > playerFourScore)
+//     {
+//         crownDiv
+//             .addClass("image-fluid")
+//             .attr("id", "crown")
+//             .prependTo($("#playerScore-0"));
+//     }
+//     if (playerTwoScore > playerOneScore &&
+//         playerTwoScore > playerThreeScore &&
+//         playerTwoScore > playerFourScore)
+//     {
+//         crownDiv
+//         .addClass("image-fluid")
+//             .attr("id", "crown")
+//             .prependTo($("#playerScore-1"));
+//     }
+//     if (playerThreeScore > playerOneScore &&
+//         playerThreeScore > playerTwoScore &&
+//         playerThreeScore > playerFourScore)
+//     {
+//         crownDiv
+//         .addClass("image-fluid")
+//             .attr("id", "crown")
+//             .prependTo($("#playerScore-2"));
+//     }
+//     if (playerFourScore > playerOneScore &&
+//         playerFourScore > playerTwoScore &&
+//         playerFourScore > playerThreeScore)
+//     {
+//         crownDiv
+//             .attr("id", "crown")
+//             .prependTo($("#playerScore-3"));
+//     }
+//     $("#crown").html("<img src ='assets/images/crown.png'>");
+//     crownExists = true;
+// }
 //if user has ran out of time
 function timedOut() {
     //update the text, clear the answers
