@@ -433,7 +433,7 @@ function clickListeners() {
 };
 function grabApi() {
     isApiGrabbed.set(true);
-    var queryURL = `https://opentdb.com/api.php?amount=3&type=multiple`;
+    var queryURL = `https://opentdb.com/api.php?amount=10&type=multiple`;
     $.ajax({
         type: "GET",
         url: queryURL
