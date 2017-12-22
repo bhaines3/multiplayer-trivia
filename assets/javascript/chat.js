@@ -1,4 +1,8 @@
 var chatData;
+var player1Exists;
+var player2Exists;
+var player3Exists;
+var player4Exists;
 function makeChatButton() {
     var chatArea = $("<div>");
     var chatMessages = $("<pre>");
@@ -11,17 +15,17 @@ function makeChatButton() {
         .html("💬")
         .attr("id","bubbleButton1")
         .attr("class", "btn btn-outline-dark")
-        .css({"position":"absolute","bottom":"10px","right":"20px","z-index":"2"})
+        .css({"position":"absolute","bottom":"10px","right":"20px","z-index":"1000"})
         .appendTo("#header")
     otherChatButton
         .html("💬")
         .attr("id","bubbleButton2")
         .attr("class", "btn btn-outline-dark")
-        .css({"position":"absolute","bottom":"10px","right":"320px","z-index":"2"})
+        .css({"position":"absolute","bottom":"10px","right":"320px","z-index":"1000"})
         .appendTo("#header")
         .hide();
     chatArea
-        .css({"position":"absolute","bottom":"10px","right":"20px","width":"300px","height":"250px","background-color":"#f5f5f599","z-index":"2",})
+        .css({"position":"absolute","bottom":"10px","right":"20px","width":"300px","height":"250px","background-color":"#f5f5f599","z-index":"1000"})
         .attr("id", "chat-area")
         .appendTo($("#header"))
         .hide();
@@ -42,7 +46,7 @@ function makeChatButton() {
         .appendTo(chatArea);
 };
 function chatClickListeners() {
-// Chat send button listener, grabs input and pushes to firebase. (Firebase's push automatically creates a unique key)
+  // Chat send button listener, grabs input and pushes to firebase. (Firebase's push automatically creates a unique key)
   $("#bubbleButton1").click(function() {
     $("#chat-area").show();
     $("#bubbleButton2").show();
@@ -89,13 +93,13 @@ function chatFirebaseListeners() {
 };
 function canWeChat(snapshot) {
   //Checking and storing to see what players already exist
-  playerOneExists = snapshot.child("0").exists();
-  playerTwoExists = snapshot.child("1").exists();
-  playerThreeExists = snapshot.child("2").exists();
-  playerFourExists = snapshot.child("3").exists();
-  if (playerOneExists && playerTwoExists && playerThreeExists && playerFourExists) {
+  player1Exists = snapshot.child("0").exists();
+  player2Exists = snapshot.child("1").exists();
+  player3Exists = snapshot.child("2").exists();
+  player4Exists = snapshot.child("3").exists();
+  if (player1Exists && player2Exists && player3Exists && player4Exists) {
     chatPossible();
-  } else {
+  } else if (!player1Exists || !player2Exists || !player3Exists || !player4Exists) {
     chatData.remove();
     $("#bubbleButton1").remove();
     $("#bubbleButton2").remove();
@@ -103,22 +107,11 @@ function canWeChat(snapshot) {
   }
 };
 function chatPossible() {
-  // For adding disconnects to the chat with a unique id (the date/time the user entered the game)
-  // Needed because Firebase's '.push()' creates its unique keys client side,
-  // so you can't ".push()" in a ".onDisconnect"
   chatData = database.ref("/chat");
-  var chatDataDisc = database.ref("/chat/" + playerNumber);
-  // Send disconnect message to chat with Firebase server generated timestamp and id of '0' to denote system message
-  chatDataDisc.onDisconnect().set({
-  name: userName,
-  time: firebase.database.ServerValue.TIMESTAMP,
-  message: "has disconnected.",
-  idNum: 0
-  });
   makeChatButton();
-  chatClickListeners();
-  chatFirebaseListeners();
 };
 $(document).ready(function(){
   playersRef.on("value", canWeChat);
+  chatClickListeners();
+  chatFirebaseListeners();
 });
